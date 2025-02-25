@@ -1,0 +1,945 @@
+---
+title: "A-graph-theory-approach-for-testing-children-s-block-construction"
+format: html
+editor: visual
+---
+
+
+
+# A graph theory approach for testing children's block construction
+
+## Libraries
+
+
+
+```{r}
+library(tidyverse)
+library(progress)
+library(igraph)
+library(ggraph)
+library(tidygraph)
+```
+
+
+
+## Load in data
+
+Here we load in our data file, in our case we have separate datafiles for children and adults. These files come from datavyu output, based on our coding manual.
+
+
+
+```{r}
+data <- read.csv("data/adult_data2.csv") ## or "data/child_data.csv" 
+# Run a function that converts any columns that should be integer (i.e. onset/offset columns) to integer (for some reason some weren't)
+convert_to_integer <- function(df) {
+  for (col in names(df)) {
+    if (grepl("offset|onset", col, ignore.case = TRUE)) {
+      df[[col]] <- as.integer(as.character(df[[col]]))
+    }
+  }
+  return(df)
+}
+data <- convert_to_integer(data)
+```
+
+
+
+## Reshaping Data
+
+### Reshaping Extra Moves
+
+When a participant adds a new block, sometimes it gets added to several blocks. We want this split up into separate moves so that we have all moves in our strings, so that if something is removed in a different way to being added, it still works. We can keep count of these without another column, since it is the only way there could be several moves at the same onset/offset
+
+
+
+```{r}
+# Function to identify rows that have values in several "relational block" columns, and duplicates them, taking contents of 2/3/4 relational columns and putting them in the first relational block, so that singular moves that touch more than one block are now represented as different rows (moves)
+duplicate_rows <- function(df, relation_cols) {
+  # Identify columns with relation1 and values in corresponding relation columns
+  relation1_cols <- grep("relation1", names(df), value = TRUE)
+  relation_cols <- lapply(relation_cols, function(col) grep(col, names(df), value = TRUE))
+  # Ensure the columns are paired correctly
+  relation_pairs <- data.frame(relation1 = relation1_cols)
+  for (i in seq_along(relation_cols)) {
+    relation_pairs[paste0("relation", i + 1)] <- relation_cols[[i]]
+  }
+  # Function to duplicate rows based on a specific relation column
+  duplicate_for_relation <- function(df, relation_pair) {
+    rows_to_duplicate <- df %>% filter(rowSums(df[relation_pair] != "." & df[relation_pair] != "") > 0)
+    duplicated_rows <- rows_to_duplicate
+    for (i in 1:nrow(relation_pairs)) {
+      duplicated_rows[[relation_pairs$relation1[i]]] <- rows_to_duplicate[[relation_pair[i]]]
+    }
+    return(duplicated_rows)
+  }
+  # Combine original and duplicated rows for each relation column
+  duplicated_rows_list <- lapply(relation_cols, function(cols) duplicate_for_relation(df, cols))
+  result <- bind_rows(df, do.call(bind_rows, duplicated_rows_list)) %>%
+    arrange(ID_id, Task_model_type, Construct_Action_onset) %>%
+    distinct()
+  
+  return(result)
+}
+# Apply the function to the data frame
+relation_cols <- c("relation2", "relation3", "relation4")
+data <- duplicate_rows(data, relation_cols)
+```
+
+
+
+### Reshaping Code to strings and creating 'isotopes' for different views of same string
+
+Here I want to get the data into columns called view1-4 and below1-4 where view 1 is the string for the move they did, and the rest are how that string would be expressed from different viewpoints. Not sure how to do that more easily :(
+
+
+
+```{r}
+# Rename the first 7 columns
+colnames(data)[12:18] <- c('b1', 'a_b', 'b1_v_h', 'b2', 'b2_v_h', 'f_b', 'l_r')
+
+data$l_r <- as.numeric(data$l_r)
+data$f_b <- as.numeric(data$f_b)
+# Create the second set of 7 columns
+data <- data %>%
+  mutate(
+    b1_2 = b1,
+    a_b_2 = a_b,
+    b1_v_h_2 = ifelse(b1_v_h == '.', '.', ifelse(b1_v_h == 'v', 'h', 'v')),
+    b2_2 = b2,
+    b2_v_h_2 = ifelse(b2_v_h == '.', '.', ifelse(b2_v_h == 'v', 'h', 'v')),
+    f_b_2 = ifelse(is.na(l_r), NA, -l_r),
+    l_r_2 = f_b
+  )
+
+# Create the third set of 7 columns
+data <- data %>%
+  mutate(
+    b1_3 = b1,
+    a_b_3 = a_b,
+    b1_v_h_3 = b1_v_h,
+    b2_3 = b2,
+    b2_v_h_3 = b2_v_h,
+    f_b_3 = ifelse(is.na(f_b), NA, -f_b),
+    l_r_3 = ifelse(is.na(l_r), NA, -l_r)
+  )
+
+# Create the fourth set of 7 columns
+data <- data %>%
+  mutate(
+    b1_4 = b1,
+    a_b_4 = a_b,
+    b1_v_h_4 = ifelse(b1_v_h == '.', '.', ifelse(b1_v_h == 'v', 'h', 'v')),
+    b2_4 = b2,
+    b2_v_h_4 = ifelse(b2_v_h == '.', '.', ifelse(b2_v_h == 'v', 'h', 'v')),
+    f_b_4 = l_r,
+    l_r_4 = ifelse(is.na(f_b), NA, -f_b)
+  )
+
+# create below 1 
+data <- data %>%
+  mutate(
+    b1_b = b2,
+    a_b_b = ifelse(a_b == "a", "b", ifelse(a_b == "b", "a", NA_character_)),
+    b1_v_h_b = b2_v_h,
+    b2_b = b1, 
+    b2_v_h_b = b1_v_h,
+    f_b_b = -f_b,
+    l_r_b = -l_r
+  )
+
+# create below 2
+data <- data %>%
+  mutate(
+    b1_b2 = b2_2,
+    a_b_b2 = ifelse(a_b_2 == "a", "b", ifelse(a_b == "b", "a", NA_character_)),
+    b1_v_h_b2 = b2_v_h_2,
+    b2_b2 = b1_2, 
+    b2_v_h_b2 = b1_v_h_2,
+    f_b_b2 = -f_b_2,
+    l_r_b2 = -l_r_2
+  )
+# create below 3
+data <- data %>%
+  mutate(
+    b1_b3 = b2_3,
+    a_b_b3 = ifelse(a_b_3 == "a", "b", ifelse(a_b == "b", "a", NA_character_)),
+    b1_v_h_b3 = b2_v_h_3,
+    b2_b3 = b1_3, 
+    b2_v_h_b3 = b1_v_h_3,
+    f_b_b3 = -f_b_3,
+    l_r_b3 = -l_r_3
+  )
+# create below 4
+data <- data %>%
+  mutate(
+    b1_b4 = b2_4,
+    a_b_b4 = ifelse(a_b_4 == "a", "b", ifelse(a_b == "b", "a", NA_character_)),
+    b1_v_h_b4 = b2_v_h_4,
+    b2_b4 = b1_4, 
+    b2_v_h_b4 = b1_v_h_4,
+    f_b_b4 = -f_b_4,
+    l_r_b4 = -l_r_4
+  )
+
+# Create the node columns
+data <- data %>%
+  mutate(
+    view1 = paste(b1, a_b, b1_v_h, b2, b2_v_h, f_b, l_r, sep = "_"),
+    view2 = paste(b1_2, a_b_2, b1_v_h_2, b2_2, b2_v_h_2, f_b_2, l_r_2, sep = "_"),
+    view3 = paste(b1_3, a_b_3, b1_v_h_3, b2_3, b2_v_h_3, f_b_3, l_r_3, sep = "_"),
+    view4 = paste(b1_4, a_b_4, b1_v_h_4, b2_4, b2_v_h_4, f_b_4, l_r_4, sep = "_"),
+    below1 = paste(b1_b, a_b_b, b1_v_h_b, b2_b, b2_v_h_b, f_b_b, l_r_b, sep = "_"),
+    below2 = paste(b1_b2, a_b_b2, b1_v_h_b2, b2_b2, b2_v_h_b2, f_b_b2, l_r_b2, sep = "_"),
+    below3 = paste(b1_b3, a_b_b3, b1_v_h_b3, b2_b3, b2_v_h_b3, f_b_b3, l_r_b3, sep = "_"),
+    below4 = paste(b1_b4, a_b_b4, b1_v_h_b4, b2_b4, b2_v_h_b4, f_b_b4, l_r_b4, sep = "_")
+  )
+data <- data %>%
+  select(ID_id, Task_model_type, Task_correct_final_ci, Construct_Action_onset, Construct_Action_offset, Construct_Action_action_cd, Perspective_Orienting_onset, Perspective_Orienting_offset, Perspective_Orienting_direction_lr, view1, view2, view3, view4, below1, below2, below3, below4)
+```
+
+
+
+### Reshaping Correct Moves
+
+We read in the base correct moves (i.e. only 5-8 possible correct moves for each participant). These moves are put in from N view. and then we create 'isotopes' as usual. This means that all moves in same column reflect correct moves from that view.
+
+
+
+```{r}
+correct_moves <- read.csv("data/correct_moves_compact.csv")
+
+# Create the second set of 7 columns
+correct_moves <- correct_moves %>%
+  mutate(
+    b1_2 = b1,
+    a_b_2 = a_b,
+    b1_v_h_2 = ifelse(b1_v_h == '.', '.', ifelse(b1_v_h == 'v', 'h', 'v')),
+    b2_2 = b2,
+    b2_v_h_2 = ifelse(b2_v_h == '.', '.', ifelse(b2_v_h == 'v', 'h', 'v')),
+    f_b_2 = ifelse(is.na(l_r), NA, -l_r),
+    l_r_2 = f_b
+  )
+
+# Create the third set of 7 columns
+correct_moves <- correct_moves %>%
+  mutate(
+    b1_3 = b1,
+    a_b_3 = a_b,
+    b1_v_h_3 = b1_v_h,
+    b2_3 = b2,
+    b2_v_h_3 = b2_v_h,
+    f_b_3 = ifelse(is.na(f_b), NA, -f_b),
+    l_r_3 = ifelse(is.na(l_r), NA, -l_r)
+  )
+
+# Create the fourth set of 7 columns
+correct_moves <- correct_moves %>%
+  mutate(
+    b1_4 = b1,
+    a_b_4 = a_b,
+    b1_v_h_4 = ifelse(b1_v_h == '.', '.', ifelse(b1_v_h == 'v', 'h', 'v')),
+    b2_4 = b2,
+    b2_v_h_4 = ifelse(b2_v_h == '.', '.', ifelse(b2_v_h == 'v', 'h', 'v')),
+    f_b_4 = l_r,
+    l_r_4 = ifelse(is.na(f_b), NA, -f_b)
+  )
+
+# create below 1 
+correct_moves <- correct_moves %>%
+  mutate(
+    b1_b = b2,
+    a_b_b = ifelse(a_b == "a", "b", ifelse(a_b == "b", "a", NA_character_)),
+    b1_v_h_b = b2_v_h,
+    b2_b = b1, 
+    b2_v_h_b = b1_v_h,
+    f_b_b = -f_b,
+    l_r_b = -l_r
+  )
+
+# create below 2
+correct_moves <- correct_moves %>%
+  mutate(
+    b1_b2 = b2_2,
+    a_b_b2 = ifelse(a_b_2 == "a", "b", ifelse(a_b == "b", "a", NA_character_)),
+    b1_v_h_b2 = b2_v_h_2,
+    b2_b2 = b1_2, 
+    b2_v_h_b2 = b1_v_h_2,
+    f_b_b2 = -f_b_2,
+    l_r_b2 = -l_r_2
+  )
+# create below 3
+correct_moves <- correct_moves %>%
+  mutate(
+    b1_b3 = b2_3,
+    a_b_b3 = ifelse(a_b_3 == "a", "b", ifelse(a_b == "b", "a", NA_character_)),
+    b1_v_h_b3 = b2_v_h_3,
+    b2_b3 = b1_3, 
+    b2_v_h_b3 = b1_v_h_3,
+    f_b_b3 = -f_b_3,
+    l_r_b3 = -l_r_3
+  )
+# create below 4
+correct_moves <- correct_moves %>%
+  mutate(
+    b1_b4 = b2_4,
+    a_b_b4 = ifelse(a_b_4 == "a", "b", ifelse(a_b == "b", "a", NA_character_)),
+    b1_v_h_b4 = b2_v_h_4,
+    b2_b4 = b1_4, 
+    b2_v_h_b4 = b1_v_h_4,
+    f_b_b4 = -f_b_4,
+    l_r_b4 = -l_r_4
+  )
+
+# Create the node columns
+correct_moves <- correct_moves %>%
+  mutate(
+    view1 = paste(b1, a_b, b1_v_h, b2, b2_v_h, f_b, l_r, sep = "_"),
+    view2 = paste(b1_2, a_b_2, b1_v_h_2, b2_2, b2_v_h_2, f_b_2, l_r_2, sep = "_"),
+    view3 = paste(b1_3, a_b_3, b1_v_h_3, b2_3, b2_v_h_3, f_b_3, l_r_3, sep = "_"),
+    view4 = paste(b1_4, a_b_4, b1_v_h_4, b2_4, b2_v_h_4, f_b_4, l_r_4, sep = "_"),
+    below1 = paste(b1_b, a_b_b, b1_v_h_b, b2_b, b2_v_h_b, f_b_b, l_r_b, sep = "_"),
+    below2 = paste(b1_b2, a_b_b2, b1_v_h_b2, b2_b2, b2_v_h_b2, f_b_b2, l_r_b2, sep = "_"),
+    below3 = paste(b1_b3, a_b_b3, b1_v_h_b3, b2_b3, b2_v_h_b3, f_b_b3, l_r_b3, sep = "_"),
+    below4 = paste(b1_b4, a_b_b4, b1_v_h_b4, b2_b4, b2_v_h_b4, f_b_b4, l_r_b4, sep = "_")
+  )
+correct_moves <- correct_moves %>%
+  select(model, view1, view2, view3, view4, below1, below2, below3, below4)
+correct_moves_list <- split(correct_moves, correct_moves$model)
+```
+
+
+
+### Reshaping Perspective Orienting to get viewpoints
+
+First, we need to coalesce onset times (the perspective_orienting and construct_action timings are kept separately), then we make sure that . (Reflecting when they have started the model from scratch) are associated with moves. This will allow us to use it later to make sure when they start building a new model, we express starting from scratch.
+
+
+
+```{r}
+# First we coalesce in the two onsets, so we can intermix in the persp_orienting and moves. Then make sure the rows are arranged correctly, then we want to create a column which keeps note of which moves are actually one move (what we split earlier). Lastly, we add Action_Number (ignoring one_move for now)
+data <- data %>%
+  mutate(Construct_Action_onset = coalesce(Construct_Action_onset, Perspective_Orienting_onset),
+         Construct_Action_offset = coalesce(Construct_Action_offset, Perspective_Orienting_offset)) %>%
+  select(-Perspective_Orienting_onset, -Perspective_Orienting_offset) %>%
+  group_by(ID_id, Task_model_type) %>%
+  arrange(ID_id, Task_model_type, Construct_Action_onset) %>%
+  mutate(action_number = ifelse(
+    !is.na(Construct_Action_action_cd) & Construct_Action_action_cd != "",
+    cumsum(!is.na(Construct_Action_action_cd) & Construct_Action_action_cd != ""),
+    NA
+  )) %>%
+  fill(action_number, .direction = "down") %>%
+  ungroup() %>%
+  group_by(Construct_Action_offset, Task_model_type, ID_id) %>%
+  mutate(Perspective_Orienting_direction_lr = ifelse(
+    any(Perspective_Orienting_direction_lr == "."),
+    ".",
+    Perspective_Orienting_direction_lr
+  )) %>%
+  ungroup()
+```
+
+
+
+### Creating a rolling viewpoint
+
+This part of the code is designed to create a rolling viewpoint for sequential moves (overall_viewpoint) for each participant, that way we can keep track of the perspective from which we are looking at moves. It says 1,2,3,4 based on 1 being their first perspective and how they move around it.
+
+We also add a "view of addition" column. This reflects the view (as compared to where they started) in which they added each move (same as overall_viewpoint originally but will become useful when we make the dataframe longer)
+
+
+
+```{r}
+# Initialize the overall_viewpoint column
+data <- data %>%
+  group_by(ID_id, Task_model_type) %>%
+  mutate(overall_viewpoint = 1) %>%
+  mutate(overall_viewpoint = ifelse(action_number == 1 | Perspective_Orienting_direction_lr == ".", 1, overall_viewpoint))
+
+# Function to update overall_viewpoint based on Perspective_Orienting_direction_lr
+update_overall_viewpoint <- function(df) {
+  for (i in 2:nrow(df)) {
+    if (df$ID_id[i] == df$ID_id[i-1]) {  # Check if the current and previous rows have the same ID
+      if (df$Perspective_Orienting_direction_lr[i] == "c") {  # Center direction
+        df$overall_viewpoint[i] <- df$overall_viewpoint[i-1] + 1
+        if (df$overall_viewpoint[i] > 4) df$overall_viewpoint[i] <- 1  # Reset if exceeds 4
+      } else if (df$Perspective_Orienting_direction_lr[i] == "a") {  # Anti-clockwise direction
+        df$overall_viewpoint[i] <- df$overall_viewpoint[i-1] - 1
+        if (df$overall_viewpoint[i] < 1) df$overall_viewpoint[i] <- 4  # Reset if below 1
+      } else if (df$Perspective_Orienting_direction_lr[i] == "") {  # No change in direction
+        df$overall_viewpoint[i] <- df$overall_viewpoint[i-1]
+      } else if (df$Perspective_Orienting_direction_lr[i] == ".") {  # Reset to 1
+        df$overall_viewpoint[i] <- 1
+      }
+    }
+  }
+  return(df)
+}
+
+# Apply the function to update overall_viewpoint
+data <- data %>%
+  group_by(ID_id, Task_model_type) %>%
+  do(update_overall_viewpoint(.)) %>%
+  filter(Construct_Action_action_cd != "")
+data$view_of_addition <- data$overall_viewpoint
+```
+
+
+
+## Longer DFs
+
+Here, we convert the data into longer DFs for each model (data_moves_list). We duplicate rows so that for each new action a participant makes, we have duplicated rows above of the actions before. This is so that we can recompute each previous action (in each action) based on the current viewpoint. I.e. if a previous action was done in a different viewpoint, in the duplicated row we can extract how the action has changed.
+
+
+
+```{r}
+process_data <- function(df) {
+  # Initialize a list to store the results for each Task_model_type
+  results <- list()
+  
+  # Loop through each Task_model_type from 'm1' to 'm8'
+  for (model_type in paste0('m', 1:8)) {
+    # Filter the dataframe for the current Task_model_type
+    df_filtered <- df %>% filter(Task_model_type == model_type)
+    
+    # Initialize an empty dataframe to store the results for the current model type
+    result <- data.frame()
+    
+    # Loop through each participant
+    participants <- unique(df_filtered$ID_id)
+    for (participant in participants) {
+      df_participant <- df_filtered %>% filter(ID_id == participant)
+      
+      # Loop through each action number
+      for (i in 1:nrow(df_participant)) {
+        current_row <- df_participant[i, ]
+        new_rows <- df_participant[1:i, ]
+        
+        # Update Action_Number and view_counter for previous actions
+        new_rows$action_number <- current_row$action_number
+        new_rows$overall_viewpoint <- current_row$overall_viewpoint
+        
+        # Add move_number column
+        new_rows$within_action_number <- 1:i
+        
+        # Append to the result dataframe
+        result <- bind_rows(result, new_rows)
+      }
+    }
+    
+    # Store the result dataframe in the list with the model type as the name
+    results[[model_type]] <- result
+  }
+  
+  return(results)
+}
+
+# Run the function
+data_moves_list <- process_data(data)
+names(data_moves_list) <- paste0("m", 1:8)
+
+```
+
+
+
+### Compute correct string
+
+This function computes the correct string choice in each move, based on a comparison of the current viewpoint and the viewpoint within which that string was added. Having the correct string choice column makes it easier when we want to add or remove strings, to look for the correct one.
+
+
+
+```{r}
+compute_string_choice <- function(df) {
+  df <- df %>%
+    mutate(string_choice = ifelse(action_number == within_action_number, 
+                                  "view1", 
+                                  paste0("view", ((1 + (overall_viewpoint - view_of_addition) - 1) %% 4 + 1))))
+  return(df)
+}
+data_moves_list <- lapply(data_moves_list, compute_string_choice)
+```
+
+
+
+## Creating paths
+
+### Function to create original states post actions
+
+This function creates a column called concatenated_moves, which gives us all the moves involved in the current model, after the action of that row is completed. Essentially this builds us our states column. It works by taking the correct string (From compute string, from viewpoint computing), and either adding it to a larger string, or removing it (or it's isotopes) from the string, based on whether it's a construct, deconstruct or fall move.
+
+
+
+```{r}
+create_concatenated_moves <- function(df) {
+  # Initialize the progress bar
+  pb <- progress_bar$new(
+    format = "  Processing [:bar] :percent in :elapsed",
+    total = nrow(df),
+    clear = FALSE,
+    width = 60
+  )
+  
+  # Initialize an empty column for concatenated_moves
+  df$concatenated_moves <- ""
+  
+  # Loop through each participant and move number
+  participants <- unique(df$ID_id)
+  for (participant in participants) {
+    df_participant <- df %>% filter(ID_id == participant)
+    move_numbers <- unique(df_participant$action_number)
+    
+    for (move_number in move_numbers) {
+      df_action <- df_participant %>% filter(action_number == move_number)
+      concatenated_moves <- ""
+      
+      for (i in 1:nrow(df_action)) {
+        current_row <- df_action[i, ]
+        previous_row <- if (i > 1) df_action[i - 1, ] else NULL
+        
+        # Reset concatenated_moves if Perspective_Orienting_direction_lr is "."
+        # and construct_action_offset is different from the previous row
+        if (!is.null(previous_row) &&
+            current_row$Perspective_Orienting_direction_lr == "." &&
+            current_row$Construct_Action_offset != previous_row$Construct_Action_offset) {
+          concatenated_moves <- ""
+        }
+        
+        if (current_row$Construct_Action_action_cd == "c") {
+          # Use string_choice to select the appropriate view column
+          view_col <- current_row$string_choice
+          concatenated_moves <- paste0(concatenated_moves, ifelse(concatenated_moves == "", "", ", "), current_row[[view_col]])
+        } else if (current_row$Construct_Action_action_cd %in% c("d", "f")) {
+          # Check and remove strings from concatenated_moves
+          for (j in 1:4) {
+            view_col <- paste0("view", j)
+            below_col <- paste0("below", j)
+            if (current_row[[view_col]] %in% strsplit(concatenated_moves, ", ")[[1]]) {
+              concatenated_moves <- gsub(paste0(", ", current_row[[view_col]]), "", concatenated_moves)
+              concatenated_moves <- gsub(current_row[[view_col]], "", concatenated_moves)
+            }
+            if (current_row[[below_col]] %in% strsplit(concatenated_moves, ", ")[[1]]) {
+              concatenated_moves <- gsub(paste0(", ", current_row[[below_col]]), "", concatenated_moves)
+              concatenated_moves <- gsub(current_row[[below_col]], "", concatenated_moves)
+            }
+          }
+        }
+        
+        # Update the concatenated_moves column
+        df$concatenated_moves[df$ID_id == participant & df$action_number == move_number] <- concatenated_moves
+        
+        # Update the progress bar
+        pb$tick()
+      }
+    }
+  }
+  
+  return(df)
+}
+
+# Apply the function to all dataframes in the list
+data_moves_list <- lapply(data_moves_list, create_concatenated_moves)
+
+# Filter each dataframe to keep only the last row for each ID_id and action_number
+data_moves_list <- lapply(data_moves_list, function(df) {
+  df %>%
+    group_by(ID_id, action_number) %>%
+    filter(row_number() == n()) %>%
+    ungroup()
+})
+```
+
+
+
+### Rejoining moves
+
+There are two ways in which moves which were technically done together are currently split up. 1. We manually split up single moves which had two relational blocks earlier on to make it easier to create paths. 2. If moves were done concurrently we coded them as one frame apart. The below function ensures that in both these cases, this is now seen as one move, i.e. the real_action_number stays the same.
+
+
+
+```{r}
+transform_df <- function(df) {
+  df %>%
+    group_by(ID_id) %>%
+    mutate(real_action_number = cumsum(
+      is.na(lag(Construct_Action_action_cd)) | 
+      is.na(lag(Construct_Action_offset)) | 
+      Construct_Action_action_cd != lag(Construct_Action_action_cd) | 
+      abs(Construct_Action_offset - lag(Construct_Action_offset)) >= 200 | 
+      row_number() == 1
+    )) %>%
+    ungroup()
+}
+# Apply the function to each dataframe in the list
+data_moves_list <- lapply(data_moves_list, transform_df)
+```
+
+
+
+## Finding correct moves and states
+
+The below functions check and returns if moves are correct or not by comparing them to the correct_moves dfs. The one after, does a similar thing for states. It checks whether every string included in the state comes from THE SAME VIEWPOINT in the correct_moves dfs, confirming that the model is correct. In order for the model to be correct, the moves need to be correct but also all from the same viewpoint.
+
+
+
+```{r}
+# Function to check if view1 string is in any column of correct_moves or set to "deconstruct"
+check_move_correct <- function(df, correct_moves) {
+  df <- df %>%
+    rowwise() %>%
+    mutate(move_correct = if_else(Construct_Action_action_cd %in% c("d", "f"), 
+                                  "deconstruct", 
+                                  as.character(any(view1 %in% unlist(correct_moves))))) %>%
+    ungroup()
+  return(df)
+}
+
+# Function to apply check_move_correct to each pair of dataframes in the lists
+apply_check_move_correct <- function(data_moves_list, correct_moves_list) {
+  result_list <- list()
+  for (i in seq_along(data_moves_list)) {
+    df <- data_moves_list[[i]]
+    correct_moves <- correct_moves_list[[i]]
+    result_list[[i]] <- check_move_correct(df, correct_moves)
+  }
+  names(result_list) <- names(data_moves_list)
+  return(result_list)
+}
+
+# Apply the function
+data_moves_list <- apply_check_move_correct(data_moves_list, correct_moves_list)
+
+# Function to check if all strings in concatenated_moves are in the corresponding view or below columns of correct_moves
+check_moves <- function(df, correct_moves) {
+  df <- df %>%
+    rowwise() %>%
+    mutate(state_correct = {
+      moves <- str_split(concatenated_moves, ",\\s*")[[1]]
+      moves <- moves[moves != "" & moves != " "]  # Remove empty strings
+      if (length(moves) == 0) {
+        FALSE
+      } else if (length(moves) == 1) {
+        any(moves %in% unlist(correct_moves))
+      } else {
+        columns <- sapply(moves, function(move) {
+          col <- which(sapply(1:4, function(i) {
+            move %in% correct_moves[[paste0("view", i)]] | move %in% correct_moves[[paste0("below", i)]]
+          }))
+          if (length(col) > 0) col else NA
+        })
+        all(!is.na(columns)) && length(unique(columns)) <= 4
+      }
+    }) %>%
+    ungroup()
+  return(df)
+}
+
+# Function to apply check_moves to each pair of dataframes in the lists
+apply_check_moves <- function(data_moves_list, correct_moves_list) {
+  result_list <- list()
+  for (i in seq_along(data_moves_list)) {
+    df <- data_moves_list[[i]]
+    correct_moves <- correct_moves_list[[i]]
+    result_list[[i]] <- check_moves(df, correct_moves)
+  }
+  names(result_list) <- names(data_moves_list)
+  return(result_list)
+}
+
+
+# Apply the function
+data_moves_list <- apply_check_moves(data_moves_list, correct_moves_list)
+```
+
+
+
+## Assigning move IDs
+
+Now we assign moves unique IDs, this will make it easier to create trees and compare same moves. Note, we waited until now to do this as we no longer need to compare viewpoints... We assign move IDs and then use these to create state IDs
+
+
+
+```{r}
+assign_move_ID <- function(data_moves_list) {
+  move_ID_list <- list()
+  
+  for (i in seq_along(data_moves_list)) {
+    move_counter <- 0
+    move_dict <- list()
+    unique_moves <- list()
+    
+    data_moves_list[[i]] <- data_moves_list[[i]] %>%
+      rowwise() %>%
+      mutate(move_ID = {
+        move_strings <- c(view1, view2, view3, view4, below1, below2, below3, below4)
+        existing_move_ID <- NA
+        
+        for (move in move_strings) {
+          if (!is.na(move) && move %in% names(move_dict)) {
+            existing_move_ID <- move_dict[[move]]
+            break
+          }
+        }
+        
+        if (is.na(existing_move_ID)) {
+          move_counter <<- move_counter + 1
+          move_ID <- move_counter
+          for (move in move_strings) {
+            if (!is.na(move)) {
+              move_dict[[move]] <<- move_ID
+            }
+          }
+          unique_moves[[move_ID]] <- move_strings
+        } else {
+          move_ID <- existing_move_ID
+        }
+        
+        move_ID
+      }) %>%
+      ungroup()
+    
+    move_ID_list[[i]] <- data_moves_list[[i]] %>%
+      select(view1, view2, view3, view4, below1, below2, below3, below4, move_ID) %>%
+      distinct(move_ID, .keep_all = TRUE)
+  }
+  
+  return(move_ID_list)
+}
+
+move_ID <- assign_move_ID(data_moves_list)
+
+convert_to_state <- function(data_moves_list, move_ID_list) {
+  for (i in seq_along(data_moves_list)) {
+    # Create a dictionary of move strings to move_IDs from move_ID_list
+    move_dict <- move_ID_list[[i]] %>%
+      pivot_longer(cols = -move_ID, values_drop_na = TRUE) %>%
+      distinct(value, move_ID) %>%
+      deframe()
+    
+    # Convert concatenated_moves to state
+    data_moves_list[[i]] <- data_moves_list[[i]] %>%
+      rowwise() %>%
+      mutate(state = {
+        moves <- str_split(concatenated_moves, ", ")[[1]]
+        move_ids <- sapply(moves, function(move) {
+          if (move != "" && move %in% names(move_dict)) {
+            move_dict[[move]]
+          } else {
+            NA  # Handle missing or empty moves
+          }
+        })
+        sorted_move_ids <- sort(na.omit(move_ids))
+        state <- paste(sorted_move_ids, collapse = ", ")
+        if (state == "") "0" else state
+      }) %>%
+      ungroup()
+  }
+  
+  return(data_moves_list)
+}
+
+data_moves_list <- convert_to_state(data_moves_list, move_ID)
+```
+
+
+
+## Data needed for trees
+
+Now we have the state and move columns to tell us the state after each move, allowing us to put into graphical structure. However, there are a few more variables we need to have fully informative graphs.
+
+First, we extract number of blocks in each state, this will allow us to define the direction of each edge (positive or negative).
+
+We then create edges by creating node_to and node_from columns. Importantly, here we make sure that if a move is several moves, it takes the FIRST node_from and LAST node_to.
+
+After, we create direction based on how the number of blocks in each state changes, and lastly we create a frequency column which tells us how many times this edge occurs.
+
+##still have the issue of if we start building again.. can use . to change it but then the arrows won't flow in the graph..
+
+
+
+```{r}
+# Function to count unique blocks
+count_blocks <- function(string) {
+  # Extract all occurrences of the specified blocks within longer strings
+  blocks <- str_extract_all(string, "(bl|bs|yl|ys|gs|gl|rl|rs)")[[1]]
+  # Ensure the blocks are unique
+  unique_blocks <- unique(blocks)
+  # Count the number of unique blocks
+  length(unique_blocks)
+}
+
+data_moves_list <- lapply(data_moves_list, function(df) {
+  df %>%
+    arrange(ID_id, real_action_number) %>%
+    mutate(blocks_in = sapply(concatenated_moves, count_blocks)) %>%
+    mutate(node_to = state,
+           node_from = lag(state)) %>%
+    mutate(node_from = ifelse(real_action_number == 1, "0", node_from)) %>%
+    group_by(ID_id, real_action_number) %>%
+    mutate(node_from = first(node_from[action_number == min(action_number)]),
+           node_to = first(node_to[action_number == max(action_number)])) %>%
+    filter(action_number == max(action_number)) %>%
+    ungroup() %>%
+    group_by(ID_id, Task_model_type) %>%
+    mutate(direction = ifelse(node_from == "0", "positive",
+                              ifelse(blocks_in > lag(blocks_in, default = first(blocks_in)), "positive",
+                                     ifelse(blocks_in < lag(blocks_in, default = first(blocks_in)), "negative", NA)))) %>%
+    ungroup() %>%
+    group_by(node_from, node_to) %>%
+    mutate(frequency = n()) %>%
+    ungroup()
+})
+```
+
+
+
+## Making Graphs!
+
+This makes the overall graph for each model.
+
+
+
+```{r}
+# Define the function to create and plot the combined network graph without highlights
+create_combined_graph <- function(data, model_name) {
+  # Create a graph object using node_from and node_to columns for all data
+  g <- graph_from_data_frame(d = data %>% select(node_from, node_to, direction, state_correct, blocks_in, real_action_number, frequency), directed = TRUE)
+  
+  # Set node attributes
+  V(g)$color <- ifelse(V(g)$name %in% data$node_to[data$state_correct], "green", "yellow")
+  V(g)$level <- sapply(V(g)$name, function(x) {
+    if (x %in% data$node_to) {
+      data$blocks_in[data$node_to == x][1]
+    } else {
+      NA
+    }
+  })
+  
+  # Set edge attributes
+  E(g)$color <- ifelse(data$direction == "positive", "darkturquoise", "brown1")
+
+  # Create a layout with the Fruchterman-Reingold algorithm
+  layout <- layout_with_fr(g)
+  layout <- as.data.frame(layout)
+  colnames(layout) <- c("x", "y")
+  layout$name <- V(g)$name
+
+  # Adjust the y positions based on blocks_num and invert them
+  layout$y <- -V(g)$level
+
+  # Spread the nodes more evenly on the x-axis within each level
+  unique_y <- unique(layout$y)
+  for (y_val in unique_y) {
+    nodes_at_y <- layout[layout$y == y_val, ]
+    num_nodes <- nrow(nodes_at_y)
+    if (num_nodes > 1) {
+      layout$x[layout$y == y_val] <- seq(from = -num_nodes / 2, to = num_nodes / 2, length.out = num_nodes)
+    }
+  }
+
+  # Plot the graph using ggraph with the adjusted layout
+  p <- ggraph(g, layout = layout) + 
+    geom_edge_link(aes(colour = I(color), label = frequency, label_pos = 0.2)) +
+    geom_node_point(aes(color = color), size = 8) +
+    scale_color_identity() +
+    theme_void() +
+    ggtitle(paste("Combined Network Graph for Model", model_name)) +
+    guides(color = FALSE, edge_color = FALSE, edge_width = FALSE) 
+  
+  # Print the plot
+  print(p)
+}
+
+# Process each data frame in the list
+for (model_name in names(data_moves_list)) {
+  df <- data_moves_list[[model_name]]
+  
+  # Create and print the combined network graph without highlights
+  create_combined_graph(df, model_name)
+}
+
+```
+
+
+
+This makes the individual graphs for each participant.
+
+
+
+```{r}
+# Define the function to create and plot the combined network graph for each participant
+create_combined_network_graph <- function(data, highlight_nodes, highlight_edges, participant_id, model_name) {
+  # Create a graph object using node_from and node_to columns for all data
+  g <- graph_from_data_frame(d = data %>% select(node_from, node_to, direction, state_correct, blocks_in, real_action_number, frequency), directed = TRUE)
+  
+  # Set node attributes
+  V(g)$color <- ifelse(V(g)$name %in% data$node_to[data$state_correct], "green", "yellow")
+  V(g)$level <- sapply(V(g)$name, function(x) {
+    if (x %in% data$node_to) {
+      data$blocks_in[data$node_to == x][1]
+    } else {
+      NA
+    }
+  })
+  
+
+  
+  # Set edge attributes
+  E(g)$color <- "grey"
+  
+  # Highlight edges
+  edge_list <- paste(data$node_from, data$node_to)
+  highlight_edge_list <- paste(highlight_edges$node_from, highlight_edges$node_to)
+  E(g)$color <- ifelse(edge_list %in% highlight_edge_list, "red", E(g)$color)
+  
+ # Create a layout with the Fruchterman-Reingold algorithm
+  layout <- layout_with_fr(g)
+  layout <- as.data.frame(layout)
+  colnames(layout) <- c("x", "y")
+  layout$name <- V(g)$name
+
+  # Adjust the y positions based on blocks_num and invert them
+  layout$y <- -V(g)$level
+
+  # Spread the nodes more evenly on the x-axis within each level
+  unique_y <- unique(layout$y)
+  for (y_val in unique_y) {
+    nodes_at_y <- layout[layout$y == y_val, ]
+    num_nodes <- nrow(nodes_at_y)
+    if (num_nodes > 1) {
+      layout$x[layout$y == y_val] <- seq(from = -num_nodes / 2, to = num_nodes / 2, length.out = num_nodes)
+    }
+  }
+  
+  # Plot the graph using ggraph with the adjusted layout
+  p <- ggraph(g, layout = layout) + 
+    geom_edge_link(aes(colour = color, label = frequency, label_pos = 0.2)) +
+    geom_node_point(aes(color = color), size = 8) +
+    geom_node_point(data = layout %>% filter(name %in% highlight_nodes), aes(x = x, y = y), color = "red", size = 9, shape = 21, stroke = 2) +
+    scale_color_identity() +
+    scale_edge_color_manual(values = c("grey", "red")) +  # Explicitly define edge colors
+    theme_void() +
+    ggtitle(paste("Combined Network Graph for Participant", participant_id, "in Model", model_name)) +
+    guides(color = FALSE, edge_color = FALSE, edge_width = FALSE)
+  # print plot
+  print(p)
+}
+
+# Process each data frame in the list
+for (model_name in names(data_moves_list)) {
+  df <- data_moves_list[[model_name]]
+  
+  # Get unique participant IDs
+  participant_ids <- unique(df$ID_id)
+  
+  # Create and save combined network graphs for each participant
+  for (participant_id in participant_ids) {
+    filtered_data <- df %>% filter(ID_id == participant_id)
+    highlight_nodes <- filtered_data$state
+    highlight_edges <- filtered_data %>% select(node_from, node_to)
+    
+    create_combined_network_graph(df, highlight_nodes, highlight_edges, participant_id, model_name)
+  }
+}
+
+```
+
