@@ -1,0 +1,2394 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>A-graph-theory-approach-for-testing-children-s-block-construction</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="A-graph-theory-approach-for-testing-children-s-block-construction_files/libs/clipboard/clipboard.min.js"></script>
+<script src="A-graph-theory-approach-for-testing-children-s-block-construction_files/libs/quarto-html/quarto.js"></script>
+<script src="A-graph-theory-approach-for-testing-children-s-block-construction_files/libs/quarto-html/popper.min.js"></script>
+<script src="A-graph-theory-approach-for-testing-children-s-block-construction_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="A-graph-theory-approach-for-testing-children-s-block-construction_files/libs/quarto-html/anchor.min.js"></script>
+<link href="A-graph-theory-approach-for-testing-children-s-block-construction_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="A-graph-theory-approach-for-testing-children-s-block-construction_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="A-graph-theory-approach-for-testing-children-s-block-construction_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="A-graph-theory-approach-for-testing-children-s-block-construction_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="A-graph-theory-approach-for-testing-children-s-block-construction_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">A-graph-theory-approach-for-testing-children-s-block-construction</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="a-graph-theory-approach-for-testing-childrens-block-construction" class="level1">
+<h1>A graph theory approach for testing children’s block construction</h1>
+<section id="libraries" class="level2">
+<h2 class="anchored" data-anchor-id="libraries">Libraries</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.4     ✔ readr     2.1.5
+✔ forcats   1.0.0     ✔ stringr   1.5.1
+✔ ggplot2   3.5.0     ✔ tibble    3.2.1
+✔ lubridate 1.9.3     ✔ tidyr     1.3.1
+✔ purrr     1.0.2     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(progress)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(igraph)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'igraph'
+
+The following objects are masked from 'package:lubridate':
+
+    %--%, union
+
+The following objects are masked from 'package:dplyr':
+
+    as_data_frame, groups, union
+
+The following objects are masked from 'package:purrr':
+
+    compose, simplify
+
+The following object is masked from 'package:tidyr':
+
+    crossing
+
+The following object is masked from 'package:tibble':
+
+    as_data_frame
+
+The following objects are masked from 'package:stats':
+
+    decompose, spectrum
+
+The following object is masked from 'package:base':
+
+    union</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggraph)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidygraph)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'tidygraph'
+
+The following object is masked from 'package:igraph':
+
+    groups
+
+The following object is masked from 'package:stats':
+
+    filter</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Cairo)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="load-in-data" class="level2">
+<h2 class="anchored" data-anchor-id="load-in-data">Load in data</h2>
+<p>Here we load in our data file, in our case we have separate datafiles for children and adults. These files come from datavyu output, based on our coding manual.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"data/adult_data2.csv"</span>) <span class="do">## or "data/child_data.csv" </span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Run a function that converts any columns that should be integer (i.e. onset/offset columns) to integer (for some reason some weren't)</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>convert_to_integer <span class="ot">&lt;-</span> <span class="cf">function</span>(df) {</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (col <span class="cf">in</span> <span class="fu">names</span>(df)) {</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">grepl</span>(<span class="st">"offset|onset"</span>, col, <span class="at">ignore.case =</span> <span class="cn">TRUE</span>)) {</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>      df[[col]] <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(<span class="fu">as.character</span>(df[[col]]))</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(df)</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">convert_to_integer</span>(data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in convert_to_integer(data): NAs introduced by coercion
+Warning in convert_to_integer(data): NAs introduced by coercion
+Warning in convert_to_integer(data): NAs introduced by coercion
+Warning in convert_to_integer(data): NAs introduced by coercion
+Warning in convert_to_integer(data): NAs introduced by coercion
+Warning in convert_to_integer(data): NAs introduced by coercion
+Warning in convert_to_integer(data): NAs introduced by coercion
+Warning in convert_to_integer(data): NAs introduced by coercion
+Warning in convert_to_integer(data): NAs introduced by coercion
+Warning in convert_to_integer(data): NAs introduced by coercion</code></pre>
+</div>
+</div>
+</section>
+<section id="reshaping-data" class="level2">
+<h2 class="anchored" data-anchor-id="reshaping-data">Reshaping Data</h2>
+<section id="reshaping-extra-moves" class="level3">
+<h3 class="anchored" data-anchor-id="reshaping-extra-moves">Reshaping Extra Moves</h3>
+<p>When a participant adds a new block, sometimes it gets added to several blocks. We want this split up into separate moves so that we have all moves in our strings, so that if something is removed in a different way to being added, it still works. We can keep count of these without another column, since it is the only way there could be several moves at the same onset/offset</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Function to identify rows that have values in several "relational block" columns, and duplicates them, taking contents of 2/3/4 relational columns and putting them in the first relational block, so that singular moves that touch more than one block are now represented as different rows (moves)</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>duplicate_rows <span class="ot">&lt;-</span> <span class="cf">function</span>(df, relation_cols) {</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Identify columns with relation1 and values in corresponding relation columns</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  relation1_cols <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">"relation1"</span>, <span class="fu">names</span>(df), <span class="at">value =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  relation_cols <span class="ot">&lt;-</span> <span class="fu">lapply</span>(relation_cols, <span class="cf">function</span>(col) <span class="fu">grep</span>(col, <span class="fu">names</span>(df), <span class="at">value =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Ensure the columns are paired correctly</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  relation_pairs <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">relation1 =</span> relation1_cols)</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_along</span>(relation_cols)) {</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    relation_pairs[<span class="fu">paste0</span>(<span class="st">"relation"</span>, i <span class="sc">+</span> <span class="dv">1</span>)] <span class="ot">&lt;-</span> relation_cols[[i]]</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Function to duplicate rows based on a specific relation column</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>  duplicate_for_relation <span class="ot">&lt;-</span> <span class="cf">function</span>(df, relation_pair) {</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    rows_to_duplicate <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="fu">rowSums</span>(df[relation_pair] <span class="sc">!=</span> <span class="st">"."</span> <span class="sc">&amp;</span> df[relation_pair] <span class="sc">!=</span> <span class="st">""</span>) <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>    duplicated_rows <span class="ot">&lt;-</span> rows_to_duplicate</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(relation_pairs)) {</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>      duplicated_rows[[relation_pairs<span class="sc">$</span>relation1[i]]] <span class="ot">&lt;-</span> rows_to_duplicate[[relation_pair[i]]]</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(duplicated_rows)</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Combine original and duplicated rows for each relation column</span></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>  duplicated_rows_list <span class="ot">&lt;-</span> <span class="fu">lapply</span>(relation_cols, <span class="cf">function</span>(cols) <span class="fu">duplicate_for_relation</span>(df, cols))</span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>  result <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(df, <span class="fu">do.call</span>(bind_rows, duplicated_rows_list)) <span class="sc">%&gt;%</span></span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">arrange</span>(ID_id, Task_model_type, Construct_Action_onset) <span class="sc">%&gt;%</span></span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">distinct</span>()</span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(result)</span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply the function to the data frame</span></span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>relation_cols <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"relation2"</span>, <span class="st">"relation3"</span>, <span class="st">"relation4"</span>)</span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">duplicate_rows</span>(data, relation_cols)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="reshaping-code-to-strings-and-creating-isotopes-for-different-views-of-same-string" class="level3">
+<h3 class="anchored" data-anchor-id="reshaping-code-to-strings-and-creating-isotopes-for-different-views-of-same-string">Reshaping Code to strings and creating ‘isotopes’ for different views of same string</h3>
+<p>Here I want to get the data into columns called view1-4 and below1-4 where view 1 is the string for the move they did, and the rest are how that string would be expressed from different viewpoints. Not sure how to do that more easily :(</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Rename the first 7 columns</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(data)[<span class="dv">12</span><span class="sc">:</span><span class="dv">18</span>] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'b1'</span>, <span class="st">'a_b'</span>, <span class="st">'b1_v_h'</span>, <span class="st">'b2'</span>, <span class="st">'b2_v_h'</span>, <span class="st">'f_b'</span>, <span class="st">'l_r'</span>)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>l_r <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(data<span class="sc">$</span>l_r)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>f_b <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(data<span class="sc">$</span>f_b)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the second set of 7 columns</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">b1_2 =</span> b1,</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">a_b_2 =</span> a_b,</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">b1_v_h_2 =</span> <span class="fu">ifelse</span>(b1_v_h <span class="sc">==</span> <span class="st">'.'</span>, <span class="st">'.'</span>, <span class="fu">ifelse</span>(b1_v_h <span class="sc">==</span> <span class="st">'v'</span>, <span class="st">'h'</span>, <span class="st">'v'</span>)),</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">b2_2 =</span> b2,</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">b2_v_h_2 =</span> <span class="fu">ifelse</span>(b2_v_h <span class="sc">==</span> <span class="st">'.'</span>, <span class="st">'.'</span>, <span class="fu">ifelse</span>(b2_v_h <span class="sc">==</span> <span class="st">'v'</span>, <span class="st">'h'</span>, <span class="st">'v'</span>)),</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">f_b_2 =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(l_r), <span class="cn">NA</span>, <span class="sc">-</span>l_r),</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">l_r_2 =</span> f_b</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the third set of 7 columns</span></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">b1_3 =</span> b1,</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">a_b_3 =</span> a_b,</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">b1_v_h_3 =</span> b1_v_h,</span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">b2_3 =</span> b2,</span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">b2_v_h_3 =</span> b2_v_h,</span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">f_b_3 =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(f_b), <span class="cn">NA</span>, <span class="sc">-</span>f_b),</span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">l_r_3 =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(l_r), <span class="cn">NA</span>, <span class="sc">-</span>l_r)</span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the fourth set of 7 columns</span></span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">b1_4 =</span> b1,</span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">a_b_4 =</span> a_b,</span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">b1_v_h_4 =</span> <span class="fu">ifelse</span>(b1_v_h <span class="sc">==</span> <span class="st">'.'</span>, <span class="st">'.'</span>, <span class="fu">ifelse</span>(b1_v_h <span class="sc">==</span> <span class="st">'v'</span>, <span class="st">'h'</span>, <span class="st">'v'</span>)),</span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">b2_4 =</span> b2,</span>
+<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">b2_v_h_4 =</span> <span class="fu">ifelse</span>(b2_v_h <span class="sc">==</span> <span class="st">'.'</span>, <span class="st">'.'</span>, <span class="fu">ifelse</span>(b2_v_h <span class="sc">==</span> <span class="st">'v'</span>, <span class="st">'h'</span>, <span class="st">'v'</span>)),</span>
+<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a>    <span class="at">f_b_4 =</span> l_r,</span>
+<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a>    <span class="at">l_r_4 =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(f_b), <span class="cn">NA</span>, <span class="sc">-</span>f_b)</span>
+<span id="cb11-40"><a href="#cb11-40" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb11-41"><a href="#cb11-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-42"><a href="#cb11-42" aria-hidden="true" tabindex="-1"></a><span class="co"># create below 1 </span></span>
+<span id="cb11-43"><a href="#cb11-43" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb11-44"><a href="#cb11-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb11-45"><a href="#cb11-45" aria-hidden="true" tabindex="-1"></a>    <span class="at">b1_b =</span> b2,</span>
+<span id="cb11-46"><a href="#cb11-46" aria-hidden="true" tabindex="-1"></a>    <span class="at">a_b_b =</span> <span class="fu">ifelse</span>(a_b <span class="sc">==</span> <span class="st">"a"</span>, <span class="st">"b"</span>, <span class="fu">ifelse</span>(a_b <span class="sc">==</span> <span class="st">"b"</span>, <span class="st">"a"</span>, <span class="cn">NA_character_</span>)),</span>
+<span id="cb11-47"><a href="#cb11-47" aria-hidden="true" tabindex="-1"></a>    <span class="at">b1_v_h_b =</span> b2_v_h,</span>
+<span id="cb11-48"><a href="#cb11-48" aria-hidden="true" tabindex="-1"></a>    <span class="at">b2_b =</span> b1, </span>
+<span id="cb11-49"><a href="#cb11-49" aria-hidden="true" tabindex="-1"></a>    <span class="at">b2_v_h_b =</span> b1_v_h,</span>
+<span id="cb11-50"><a href="#cb11-50" aria-hidden="true" tabindex="-1"></a>    <span class="at">f_b_b =</span> <span class="sc">-</span>f_b,</span>
+<span id="cb11-51"><a href="#cb11-51" aria-hidden="true" tabindex="-1"></a>    <span class="at">l_r_b =</span> <span class="sc">-</span>l_r</span>
+<span id="cb11-52"><a href="#cb11-52" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb11-53"><a href="#cb11-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-54"><a href="#cb11-54" aria-hidden="true" tabindex="-1"></a><span class="co"># create below 2</span></span>
+<span id="cb11-55"><a href="#cb11-55" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb11-56"><a href="#cb11-56" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb11-57"><a href="#cb11-57" aria-hidden="true" tabindex="-1"></a>    <span class="at">b1_b2 =</span> b2_2,</span>
+<span id="cb11-58"><a href="#cb11-58" aria-hidden="true" tabindex="-1"></a>    <span class="at">a_b_b2 =</span> <span class="fu">ifelse</span>(a_b_2 <span class="sc">==</span> <span class="st">"a"</span>, <span class="st">"b"</span>, <span class="fu">ifelse</span>(a_b <span class="sc">==</span> <span class="st">"b"</span>, <span class="st">"a"</span>, <span class="cn">NA_character_</span>)),</span>
+<span id="cb11-59"><a href="#cb11-59" aria-hidden="true" tabindex="-1"></a>    <span class="at">b1_v_h_b2 =</span> b2_v_h_2,</span>
+<span id="cb11-60"><a href="#cb11-60" aria-hidden="true" tabindex="-1"></a>    <span class="at">b2_b2 =</span> b1_2, </span>
+<span id="cb11-61"><a href="#cb11-61" aria-hidden="true" tabindex="-1"></a>    <span class="at">b2_v_h_b2 =</span> b1_v_h_2,</span>
+<span id="cb11-62"><a href="#cb11-62" aria-hidden="true" tabindex="-1"></a>    <span class="at">f_b_b2 =</span> <span class="sc">-</span>f_b_2,</span>
+<span id="cb11-63"><a href="#cb11-63" aria-hidden="true" tabindex="-1"></a>    <span class="at">l_r_b2 =</span> <span class="sc">-</span>l_r_2</span>
+<span id="cb11-64"><a href="#cb11-64" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb11-65"><a href="#cb11-65" aria-hidden="true" tabindex="-1"></a><span class="co"># create below 3</span></span>
+<span id="cb11-66"><a href="#cb11-66" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb11-67"><a href="#cb11-67" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb11-68"><a href="#cb11-68" aria-hidden="true" tabindex="-1"></a>    <span class="at">b1_b3 =</span> b2_3,</span>
+<span id="cb11-69"><a href="#cb11-69" aria-hidden="true" tabindex="-1"></a>    <span class="at">a_b_b3 =</span> <span class="fu">ifelse</span>(a_b_3 <span class="sc">==</span> <span class="st">"a"</span>, <span class="st">"b"</span>, <span class="fu">ifelse</span>(a_b <span class="sc">==</span> <span class="st">"b"</span>, <span class="st">"a"</span>, <span class="cn">NA_character_</span>)),</span>
+<span id="cb11-70"><a href="#cb11-70" aria-hidden="true" tabindex="-1"></a>    <span class="at">b1_v_h_b3 =</span> b2_v_h_3,</span>
+<span id="cb11-71"><a href="#cb11-71" aria-hidden="true" tabindex="-1"></a>    <span class="at">b2_b3 =</span> b1_3, </span>
+<span id="cb11-72"><a href="#cb11-72" aria-hidden="true" tabindex="-1"></a>    <span class="at">b2_v_h_b3 =</span> b1_v_h_3,</span>
+<span id="cb11-73"><a href="#cb11-73" aria-hidden="true" tabindex="-1"></a>    <span class="at">f_b_b3 =</span> <span class="sc">-</span>f_b_3,</span>
+<span id="cb11-74"><a href="#cb11-74" aria-hidden="true" tabindex="-1"></a>    <span class="at">l_r_b3 =</span> <span class="sc">-</span>l_r_3</span>
+<span id="cb11-75"><a href="#cb11-75" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb11-76"><a href="#cb11-76" aria-hidden="true" tabindex="-1"></a><span class="co"># create below 4</span></span>
+<span id="cb11-77"><a href="#cb11-77" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb11-78"><a href="#cb11-78" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb11-79"><a href="#cb11-79" aria-hidden="true" tabindex="-1"></a>    <span class="at">b1_b4 =</span> b2_4,</span>
+<span id="cb11-80"><a href="#cb11-80" aria-hidden="true" tabindex="-1"></a>    <span class="at">a_b_b4 =</span> <span class="fu">ifelse</span>(a_b_4 <span class="sc">==</span> <span class="st">"a"</span>, <span class="st">"b"</span>, <span class="fu">ifelse</span>(a_b <span class="sc">==</span> <span class="st">"b"</span>, <span class="st">"a"</span>, <span class="cn">NA_character_</span>)),</span>
+<span id="cb11-81"><a href="#cb11-81" aria-hidden="true" tabindex="-1"></a>    <span class="at">b1_v_h_b4 =</span> b2_v_h_4,</span>
+<span id="cb11-82"><a href="#cb11-82" aria-hidden="true" tabindex="-1"></a>    <span class="at">b2_b4 =</span> b1_4, </span>
+<span id="cb11-83"><a href="#cb11-83" aria-hidden="true" tabindex="-1"></a>    <span class="at">b2_v_h_b4 =</span> b1_v_h_4,</span>
+<span id="cb11-84"><a href="#cb11-84" aria-hidden="true" tabindex="-1"></a>    <span class="at">f_b_b4 =</span> <span class="sc">-</span>f_b_4,</span>
+<span id="cb11-85"><a href="#cb11-85" aria-hidden="true" tabindex="-1"></a>    <span class="at">l_r_b4 =</span> <span class="sc">-</span>l_r_4</span>
+<span id="cb11-86"><a href="#cb11-86" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb11-87"><a href="#cb11-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-88"><a href="#cb11-88" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the node columns</span></span>
+<span id="cb11-89"><a href="#cb11-89" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb11-90"><a href="#cb11-90" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb11-91"><a href="#cb11-91" aria-hidden="true" tabindex="-1"></a>    <span class="at">view1 =</span> <span class="fu">paste</span>(b1, a_b, b1_v_h, b2, b2_v_h, f_b, l_r, <span class="at">sep =</span> <span class="st">"_"</span>),</span>
+<span id="cb11-92"><a href="#cb11-92" aria-hidden="true" tabindex="-1"></a>    <span class="at">view2 =</span> <span class="fu">paste</span>(b1_2, a_b_2, b1_v_h_2, b2_2, b2_v_h_2, f_b_2, l_r_2, <span class="at">sep =</span> <span class="st">"_"</span>),</span>
+<span id="cb11-93"><a href="#cb11-93" aria-hidden="true" tabindex="-1"></a>    <span class="at">view3 =</span> <span class="fu">paste</span>(b1_3, a_b_3, b1_v_h_3, b2_3, b2_v_h_3, f_b_3, l_r_3, <span class="at">sep =</span> <span class="st">"_"</span>),</span>
+<span id="cb11-94"><a href="#cb11-94" aria-hidden="true" tabindex="-1"></a>    <span class="at">view4 =</span> <span class="fu">paste</span>(b1_4, a_b_4, b1_v_h_4, b2_4, b2_v_h_4, f_b_4, l_r_4, <span class="at">sep =</span> <span class="st">"_"</span>),</span>
+<span id="cb11-95"><a href="#cb11-95" aria-hidden="true" tabindex="-1"></a>    <span class="at">below1 =</span> <span class="fu">paste</span>(b1_b, a_b_b, b1_v_h_b, b2_b, b2_v_h_b, f_b_b, l_r_b, <span class="at">sep =</span> <span class="st">"_"</span>),</span>
+<span id="cb11-96"><a href="#cb11-96" aria-hidden="true" tabindex="-1"></a>    <span class="at">below2 =</span> <span class="fu">paste</span>(b1_b2, a_b_b2, b1_v_h_b2, b2_b2, b2_v_h_b2, f_b_b2, l_r_b2, <span class="at">sep =</span> <span class="st">"_"</span>),</span>
+<span id="cb11-97"><a href="#cb11-97" aria-hidden="true" tabindex="-1"></a>    <span class="at">below3 =</span> <span class="fu">paste</span>(b1_b3, a_b_b3, b1_v_h_b3, b2_b3, b2_v_h_b3, f_b_b3, l_r_b3, <span class="at">sep =</span> <span class="st">"_"</span>),</span>
+<span id="cb11-98"><a href="#cb11-98" aria-hidden="true" tabindex="-1"></a>    <span class="at">below4 =</span> <span class="fu">paste</span>(b1_b4, a_b_b4, b1_v_h_b4, b2_b4, b2_v_h_b4, f_b_b4, l_r_b4, <span class="at">sep =</span> <span class="st">"_"</span>)</span>
+<span id="cb11-99"><a href="#cb11-99" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb11-100"><a href="#cb11-100" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb11-101"><a href="#cb11-101" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(ID_id, Task_model_type, Task_correct_final_ci, Construct_Action_onset, Construct_Action_offset, Construct_Action_action_cd, Perspective_Orienting_onset, Perspective_Orienting_offset, Perspective_Orienting_direction_lr, view1, view2, view3, view4, below1, below2, below3, below4)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="reshaping-correct-moves" class="level3">
+<h3 class="anchored" data-anchor-id="reshaping-correct-moves">Reshaping Correct Moves</h3>
+<p>We read in the base correct moves (i.e.&nbsp;only 5-8 possible correct moves for each participant). These moves are put in from N view. and then we create ‘isotopes’ as usual. This means that all moves in same column reflect correct moves from that view.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>correct_moves <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"data/correct_moves_compact.csv"</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the second set of 7 columns</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>correct_moves <span class="ot">&lt;-</span> correct_moves <span class="sc">%&gt;%</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">b1_2 =</span> b1,</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">a_b_2 =</span> a_b,</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">b1_v_h_2 =</span> <span class="fu">ifelse</span>(b1_v_h <span class="sc">==</span> <span class="st">'.'</span>, <span class="st">'.'</span>, <span class="fu">ifelse</span>(b1_v_h <span class="sc">==</span> <span class="st">'v'</span>, <span class="st">'h'</span>, <span class="st">'v'</span>)),</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">b2_2 =</span> b2,</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">b2_v_h_2 =</span> <span class="fu">ifelse</span>(b2_v_h <span class="sc">==</span> <span class="st">'.'</span>, <span class="st">'.'</span>, <span class="fu">ifelse</span>(b2_v_h <span class="sc">==</span> <span class="st">'v'</span>, <span class="st">'h'</span>, <span class="st">'v'</span>)),</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">f_b_2 =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(l_r), <span class="cn">NA</span>, <span class="sc">-</span>l_r),</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">l_r_2 =</span> f_b</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the third set of 7 columns</span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>correct_moves <span class="ot">&lt;-</span> correct_moves <span class="sc">%&gt;%</span></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">b1_3 =</span> b1,</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">a_b_3 =</span> a_b,</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">b1_v_h_3 =</span> b1_v_h,</span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">b2_3 =</span> b2,</span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">b2_v_h_3 =</span> b2_v_h,</span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">f_b_3 =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(f_b), <span class="cn">NA</span>, <span class="sc">-</span>f_b),</span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">l_r_3 =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(l_r), <span class="cn">NA</span>, <span class="sc">-</span>l_r)</span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the fourth set of 7 columns</span></span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>correct_moves <span class="ot">&lt;-</span> correct_moves <span class="sc">%&gt;%</span></span>
+<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">b1_4 =</span> b1,</span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">a_b_4 =</span> a_b,</span>
+<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">b1_v_h_4 =</span> <span class="fu">ifelse</span>(b1_v_h <span class="sc">==</span> <span class="st">'.'</span>, <span class="st">'.'</span>, <span class="fu">ifelse</span>(b1_v_h <span class="sc">==</span> <span class="st">'v'</span>, <span class="st">'h'</span>, <span class="st">'v'</span>)),</span>
+<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">b2_4 =</span> b2,</span>
+<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">b2_v_h_4 =</span> <span class="fu">ifelse</span>(b2_v_h <span class="sc">==</span> <span class="st">'.'</span>, <span class="st">'.'</span>, <span class="fu">ifelse</span>(b2_v_h <span class="sc">==</span> <span class="st">'v'</span>, <span class="st">'h'</span>, <span class="st">'v'</span>)),</span>
+<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">f_b_4 =</span> l_r,</span>
+<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">l_r_4 =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(f_b), <span class="cn">NA</span>, <span class="sc">-</span>f_b)</span>
+<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-39"><a href="#cb12-39" aria-hidden="true" tabindex="-1"></a><span class="co"># create below 1 </span></span>
+<span id="cb12-40"><a href="#cb12-40" aria-hidden="true" tabindex="-1"></a>correct_moves <span class="ot">&lt;-</span> correct_moves <span class="sc">%&gt;%</span></span>
+<span id="cb12-41"><a href="#cb12-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb12-42"><a href="#cb12-42" aria-hidden="true" tabindex="-1"></a>    <span class="at">b1_b =</span> b2,</span>
+<span id="cb12-43"><a href="#cb12-43" aria-hidden="true" tabindex="-1"></a>    <span class="at">a_b_b =</span> <span class="fu">ifelse</span>(a_b <span class="sc">==</span> <span class="st">"a"</span>, <span class="st">"b"</span>, <span class="fu">ifelse</span>(a_b <span class="sc">==</span> <span class="st">"b"</span>, <span class="st">"a"</span>, <span class="cn">NA_character_</span>)),</span>
+<span id="cb12-44"><a href="#cb12-44" aria-hidden="true" tabindex="-1"></a>    <span class="at">b1_v_h_b =</span> b2_v_h,</span>
+<span id="cb12-45"><a href="#cb12-45" aria-hidden="true" tabindex="-1"></a>    <span class="at">b2_b =</span> b1, </span>
+<span id="cb12-46"><a href="#cb12-46" aria-hidden="true" tabindex="-1"></a>    <span class="at">b2_v_h_b =</span> b1_v_h,</span>
+<span id="cb12-47"><a href="#cb12-47" aria-hidden="true" tabindex="-1"></a>    <span class="at">f_b_b =</span> <span class="sc">-</span>f_b,</span>
+<span id="cb12-48"><a href="#cb12-48" aria-hidden="true" tabindex="-1"></a>    <span class="at">l_r_b =</span> <span class="sc">-</span>l_r</span>
+<span id="cb12-49"><a href="#cb12-49" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb12-50"><a href="#cb12-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-51"><a href="#cb12-51" aria-hidden="true" tabindex="-1"></a><span class="co"># create below 2</span></span>
+<span id="cb12-52"><a href="#cb12-52" aria-hidden="true" tabindex="-1"></a>correct_moves <span class="ot">&lt;-</span> correct_moves <span class="sc">%&gt;%</span></span>
+<span id="cb12-53"><a href="#cb12-53" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb12-54"><a href="#cb12-54" aria-hidden="true" tabindex="-1"></a>    <span class="at">b1_b2 =</span> b2_2,</span>
+<span id="cb12-55"><a href="#cb12-55" aria-hidden="true" tabindex="-1"></a>    <span class="at">a_b_b2 =</span> <span class="fu">ifelse</span>(a_b_2 <span class="sc">==</span> <span class="st">"a"</span>, <span class="st">"b"</span>, <span class="fu">ifelse</span>(a_b <span class="sc">==</span> <span class="st">"b"</span>, <span class="st">"a"</span>, <span class="cn">NA_character_</span>)),</span>
+<span id="cb12-56"><a href="#cb12-56" aria-hidden="true" tabindex="-1"></a>    <span class="at">b1_v_h_b2 =</span> b2_v_h_2,</span>
+<span id="cb12-57"><a href="#cb12-57" aria-hidden="true" tabindex="-1"></a>    <span class="at">b2_b2 =</span> b1_2, </span>
+<span id="cb12-58"><a href="#cb12-58" aria-hidden="true" tabindex="-1"></a>    <span class="at">b2_v_h_b2 =</span> b1_v_h_2,</span>
+<span id="cb12-59"><a href="#cb12-59" aria-hidden="true" tabindex="-1"></a>    <span class="at">f_b_b2 =</span> <span class="sc">-</span>f_b_2,</span>
+<span id="cb12-60"><a href="#cb12-60" aria-hidden="true" tabindex="-1"></a>    <span class="at">l_r_b2 =</span> <span class="sc">-</span>l_r_2</span>
+<span id="cb12-61"><a href="#cb12-61" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb12-62"><a href="#cb12-62" aria-hidden="true" tabindex="-1"></a><span class="co"># create below 3</span></span>
+<span id="cb12-63"><a href="#cb12-63" aria-hidden="true" tabindex="-1"></a>correct_moves <span class="ot">&lt;-</span> correct_moves <span class="sc">%&gt;%</span></span>
+<span id="cb12-64"><a href="#cb12-64" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb12-65"><a href="#cb12-65" aria-hidden="true" tabindex="-1"></a>    <span class="at">b1_b3 =</span> b2_3,</span>
+<span id="cb12-66"><a href="#cb12-66" aria-hidden="true" tabindex="-1"></a>    <span class="at">a_b_b3 =</span> <span class="fu">ifelse</span>(a_b_3 <span class="sc">==</span> <span class="st">"a"</span>, <span class="st">"b"</span>, <span class="fu">ifelse</span>(a_b <span class="sc">==</span> <span class="st">"b"</span>, <span class="st">"a"</span>, <span class="cn">NA_character_</span>)),</span>
+<span id="cb12-67"><a href="#cb12-67" aria-hidden="true" tabindex="-1"></a>    <span class="at">b1_v_h_b3 =</span> b2_v_h_3,</span>
+<span id="cb12-68"><a href="#cb12-68" aria-hidden="true" tabindex="-1"></a>    <span class="at">b2_b3 =</span> b1_3, </span>
+<span id="cb12-69"><a href="#cb12-69" aria-hidden="true" tabindex="-1"></a>    <span class="at">b2_v_h_b3 =</span> b1_v_h_3,</span>
+<span id="cb12-70"><a href="#cb12-70" aria-hidden="true" tabindex="-1"></a>    <span class="at">f_b_b3 =</span> <span class="sc">-</span>f_b_3,</span>
+<span id="cb12-71"><a href="#cb12-71" aria-hidden="true" tabindex="-1"></a>    <span class="at">l_r_b3 =</span> <span class="sc">-</span>l_r_3</span>
+<span id="cb12-72"><a href="#cb12-72" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb12-73"><a href="#cb12-73" aria-hidden="true" tabindex="-1"></a><span class="co"># create below 4</span></span>
+<span id="cb12-74"><a href="#cb12-74" aria-hidden="true" tabindex="-1"></a>correct_moves <span class="ot">&lt;-</span> correct_moves <span class="sc">%&gt;%</span></span>
+<span id="cb12-75"><a href="#cb12-75" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb12-76"><a href="#cb12-76" aria-hidden="true" tabindex="-1"></a>    <span class="at">b1_b4 =</span> b2_4,</span>
+<span id="cb12-77"><a href="#cb12-77" aria-hidden="true" tabindex="-1"></a>    <span class="at">a_b_b4 =</span> <span class="fu">ifelse</span>(a_b_4 <span class="sc">==</span> <span class="st">"a"</span>, <span class="st">"b"</span>, <span class="fu">ifelse</span>(a_b <span class="sc">==</span> <span class="st">"b"</span>, <span class="st">"a"</span>, <span class="cn">NA_character_</span>)),</span>
+<span id="cb12-78"><a href="#cb12-78" aria-hidden="true" tabindex="-1"></a>    <span class="at">b1_v_h_b4 =</span> b2_v_h_4,</span>
+<span id="cb12-79"><a href="#cb12-79" aria-hidden="true" tabindex="-1"></a>    <span class="at">b2_b4 =</span> b1_4, </span>
+<span id="cb12-80"><a href="#cb12-80" aria-hidden="true" tabindex="-1"></a>    <span class="at">b2_v_h_b4 =</span> b1_v_h_4,</span>
+<span id="cb12-81"><a href="#cb12-81" aria-hidden="true" tabindex="-1"></a>    <span class="at">f_b_b4 =</span> <span class="sc">-</span>f_b_4,</span>
+<span id="cb12-82"><a href="#cb12-82" aria-hidden="true" tabindex="-1"></a>    <span class="at">l_r_b4 =</span> <span class="sc">-</span>l_r_4</span>
+<span id="cb12-83"><a href="#cb12-83" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb12-84"><a href="#cb12-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-85"><a href="#cb12-85" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the node columns</span></span>
+<span id="cb12-86"><a href="#cb12-86" aria-hidden="true" tabindex="-1"></a>correct_moves <span class="ot">&lt;-</span> correct_moves <span class="sc">%&gt;%</span></span>
+<span id="cb12-87"><a href="#cb12-87" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb12-88"><a href="#cb12-88" aria-hidden="true" tabindex="-1"></a>    <span class="at">view1 =</span> <span class="fu">paste</span>(b1, a_b, b1_v_h, b2, b2_v_h, f_b, l_r, <span class="at">sep =</span> <span class="st">"_"</span>),</span>
+<span id="cb12-89"><a href="#cb12-89" aria-hidden="true" tabindex="-1"></a>    <span class="at">view2 =</span> <span class="fu">paste</span>(b1_2, a_b_2, b1_v_h_2, b2_2, b2_v_h_2, f_b_2, l_r_2, <span class="at">sep =</span> <span class="st">"_"</span>),</span>
+<span id="cb12-90"><a href="#cb12-90" aria-hidden="true" tabindex="-1"></a>    <span class="at">view3 =</span> <span class="fu">paste</span>(b1_3, a_b_3, b1_v_h_3, b2_3, b2_v_h_3, f_b_3, l_r_3, <span class="at">sep =</span> <span class="st">"_"</span>),</span>
+<span id="cb12-91"><a href="#cb12-91" aria-hidden="true" tabindex="-1"></a>    <span class="at">view4 =</span> <span class="fu">paste</span>(b1_4, a_b_4, b1_v_h_4, b2_4, b2_v_h_4, f_b_4, l_r_4, <span class="at">sep =</span> <span class="st">"_"</span>),</span>
+<span id="cb12-92"><a href="#cb12-92" aria-hidden="true" tabindex="-1"></a>    <span class="at">below1 =</span> <span class="fu">paste</span>(b1_b, a_b_b, b1_v_h_b, b2_b, b2_v_h_b, f_b_b, l_r_b, <span class="at">sep =</span> <span class="st">"_"</span>),</span>
+<span id="cb12-93"><a href="#cb12-93" aria-hidden="true" tabindex="-1"></a>    <span class="at">below2 =</span> <span class="fu">paste</span>(b1_b2, a_b_b2, b1_v_h_b2, b2_b2, b2_v_h_b2, f_b_b2, l_r_b2, <span class="at">sep =</span> <span class="st">"_"</span>),</span>
+<span id="cb12-94"><a href="#cb12-94" aria-hidden="true" tabindex="-1"></a>    <span class="at">below3 =</span> <span class="fu">paste</span>(b1_b3, a_b_b3, b1_v_h_b3, b2_b3, b2_v_h_b3, f_b_b3, l_r_b3, <span class="at">sep =</span> <span class="st">"_"</span>),</span>
+<span id="cb12-95"><a href="#cb12-95" aria-hidden="true" tabindex="-1"></a>    <span class="at">below4 =</span> <span class="fu">paste</span>(b1_b4, a_b_b4, b1_v_h_b4, b2_b4, b2_v_h_b4, f_b_b4, l_r_b4, <span class="at">sep =</span> <span class="st">"_"</span>)</span>
+<span id="cb12-96"><a href="#cb12-96" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb12-97"><a href="#cb12-97" aria-hidden="true" tabindex="-1"></a>correct_moves <span class="ot">&lt;-</span> correct_moves <span class="sc">%&gt;%</span></span>
+<span id="cb12-98"><a href="#cb12-98" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(model, view1, view2, view3, view4, below1, below2, below3, below4)</span>
+<span id="cb12-99"><a href="#cb12-99" aria-hidden="true" tabindex="-1"></a>correct_moves_list <span class="ot">&lt;-</span> <span class="fu">split</span>(correct_moves, correct_moves<span class="sc">$</span>model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="reshaping-perspective-orienting-to-get-viewpoints" class="level3">
+<h3 class="anchored" data-anchor-id="reshaping-perspective-orienting-to-get-viewpoints">Reshaping Perspective Orienting to get viewpoints</h3>
+<p>First, we need to coalesce onset times (the perspective_orienting and construct_action timings are kept separately), then we make sure that . (Reflecting when they have started the model from scratch) are associated with moves. This will allow us to use it later to make sure when they start building a new model, we express starting from scratch.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># First we coalesce in the two onsets, so we can intermix in the persp_orienting and moves. Then make sure the rows are arranged correctly, then we want to create a column which keeps note of which moves are actually one move (what we split earlier). Lastly, we add Action_Number (ignoring one_move for now)</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Construct_Action_onset =</span> <span class="fu">coalesce</span>(Construct_Action_onset, Perspective_Orienting_onset),</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">Construct_Action_offset =</span> <span class="fu">coalesce</span>(Construct_Action_offset, Perspective_Orienting_offset)) <span class="sc">%&gt;%</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>Perspective_Orienting_onset, <span class="sc">-</span>Perspective_Orienting_offset) <span class="sc">%&gt;%</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(ID_id, Task_model_type) <span class="sc">%&gt;%</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(ID_id, Task_model_type, Construct_Action_onset) <span class="sc">%&gt;%</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">action_number =</span> <span class="fu">ifelse</span>(</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    <span class="sc">!</span><span class="fu">is.na</span>(Construct_Action_action_cd) <span class="sc">&amp;</span> Construct_Action_action_cd <span class="sc">!=</span> <span class="st">""</span>,</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cumsum</span>(<span class="sc">!</span><span class="fu">is.na</span>(Construct_Action_action_cd) <span class="sc">&amp;</span> Construct_Action_action_cd <span class="sc">!=</span> <span class="st">""</span>),</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    <span class="cn">NA</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fill</span>(action_number, <span class="at">.direction =</span> <span class="st">"down"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Construct_Action_offset, Task_model_type, ID_id) <span class="sc">%&gt;%</span></span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Perspective_Orienting_direction_lr =</span> <span class="fu">ifelse</span>(</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">any</span>(Perspective_Orienting_direction_lr <span class="sc">==</span> <span class="st">"."</span>),</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">"."</span>,</span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>    Perspective_Orienting_direction_lr</span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span></span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="creating-a-rolling-viewpoint" class="level3">
+<h3 class="anchored" data-anchor-id="creating-a-rolling-viewpoint">Creating a rolling viewpoint</h3>
+<p>This part of the code is designed to create a rolling viewpoint for sequential moves (overall_viewpoint) for each participant, that way we can keep track of the perspective from which we are looking at moves. It says 1,2,3,4 based on 1 being their first perspective and how they move around it.</p>
+<p>We also add a “view of addition” column. This reflects the view (as compared to where they started) in which they added each move (same as overall_viewpoint originally but will become useful when we make the dataframe longer)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Initialize the overall_viewpoint column</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(ID_id, Task_model_type) <span class="sc">%&gt;%</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">overall_viewpoint =</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">overall_viewpoint =</span> <span class="fu">ifelse</span>(action_number <span class="sc">==</span> <span class="dv">1</span> <span class="sc">|</span> Perspective_Orienting_direction_lr <span class="sc">==</span> <span class="st">"."</span>, <span class="dv">1</span>, overall_viewpoint))</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Function to update overall_viewpoint based on Perspective_Orienting_direction_lr</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>update_overall_viewpoint <span class="ot">&lt;-</span> <span class="cf">function</span>(df) {</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span><span class="fu">nrow</span>(df)) {</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (df<span class="sc">$</span>ID_id[i] <span class="sc">==</span> df<span class="sc">$</span>ID_id[i<span class="dv">-1</span>]) {  <span class="co"># Check if the current and previous rows have the same ID</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (df<span class="sc">$</span>Perspective_Orienting_direction_lr[i] <span class="sc">==</span> <span class="st">"c"</span>) {  <span class="co"># Center direction</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>        df<span class="sc">$</span>overall_viewpoint[i] <span class="ot">&lt;-</span> df<span class="sc">$</span>overall_viewpoint[i<span class="dv">-1</span>] <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (df<span class="sc">$</span>overall_viewpoint[i] <span class="sc">&gt;</span> <span class="dv">4</span>) df<span class="sc">$</span>overall_viewpoint[i] <span class="ot">&lt;-</span> <span class="dv">1</span>  <span class="co"># Reset if exceeds 4</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>      } <span class="cf">else</span> <span class="cf">if</span> (df<span class="sc">$</span>Perspective_Orienting_direction_lr[i] <span class="sc">==</span> <span class="st">"a"</span>) {  <span class="co"># Anti-clockwise direction</span></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>        df<span class="sc">$</span>overall_viewpoint[i] <span class="ot">&lt;-</span> df<span class="sc">$</span>overall_viewpoint[i<span class="dv">-1</span>] <span class="sc">-</span> <span class="dv">1</span></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (df<span class="sc">$</span>overall_viewpoint[i] <span class="sc">&lt;</span> <span class="dv">1</span>) df<span class="sc">$</span>overall_viewpoint[i] <span class="ot">&lt;-</span> <span class="dv">4</span>  <span class="co"># Reset if below 1</span></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>      } <span class="cf">else</span> <span class="cf">if</span> (df<span class="sc">$</span>Perspective_Orienting_direction_lr[i] <span class="sc">==</span> <span class="st">""</span>) {  <span class="co"># No change in direction</span></span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>        df<span class="sc">$</span>overall_viewpoint[i] <span class="ot">&lt;-</span> df<span class="sc">$</span>overall_viewpoint[i<span class="dv">-1</span>]</span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>      } <span class="cf">else</span> <span class="cf">if</span> (df<span class="sc">$</span>Perspective_Orienting_direction_lr[i] <span class="sc">==</span> <span class="st">"."</span>) {  <span class="co"># Reset to 1</span></span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>        df<span class="sc">$</span>overall_viewpoint[i] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(df)</span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply the function to update overall_viewpoint</span></span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(ID_id, Task_model_type) <span class="sc">%&gt;%</span></span>
+<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">do</span>(<span class="fu">update_overall_viewpoint</span>(.)) <span class="sc">%&gt;%</span></span>
+<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Construct_Action_action_cd <span class="sc">!=</span> <span class="st">""</span>)</span>
+<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>view_of_addition <span class="ot">&lt;-</span> data<span class="sc">$</span>overall_viewpoint</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="longer-dfs" class="level2">
+<h2 class="anchored" data-anchor-id="longer-dfs">Longer DFs</h2>
+<p>Here, we convert the data into longer DFs for each model (data_moves_list). We duplicate rows so that for each new action a participant makes, we have duplicated rows above of the actions before. This is so that we can recompute each previous action (in each action) based on the current viewpoint. I.e. if a previous action was done in a different viewpoint, in the duplicated row we can extract how the action has changed.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>process_data <span class="ot">&lt;-</span> <span class="cf">function</span>(df) {</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Initialize a list to store the results for each Task_model_type</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  results <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Loop through each Task_model_type from 'm1' to 'm8'</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (model_type <span class="cf">in</span> <span class="fu">paste0</span>(<span class="st">'m'</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>)) {</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Filter the dataframe for the current Task_model_type</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    df_filtered <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Task_model_type <span class="sc">==</span> model_type)</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Initialize an empty dataframe to store the results for the current model type</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>    result <span class="ot">&lt;-</span> <span class="fu">data.frame</span>()</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Loop through each participant</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>    participants <span class="ot">&lt;-</span> <span class="fu">unique</span>(df_filtered<span class="sc">$</span>ID_id)</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (participant <span class="cf">in</span> participants) {</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>      df_participant <span class="ot">&lt;-</span> df_filtered <span class="sc">%&gt;%</span> <span class="fu">filter</span>(ID_id <span class="sc">==</span> participant)</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Loop through each action number</span></span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>      <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(df_participant)) {</span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>        current_row <span class="ot">&lt;-</span> df_participant[i, ]</span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>        new_rows <span class="ot">&lt;-</span> df_participant[<span class="dv">1</span><span class="sc">:</span>i, ]</span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Update Action_Number and view_counter for previous actions</span></span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>        new_rows<span class="sc">$</span>action_number <span class="ot">&lt;-</span> current_row<span class="sc">$</span>action_number</span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a>        new_rows<span class="sc">$</span>overall_viewpoint <span class="ot">&lt;-</span> current_row<span class="sc">$</span>overall_viewpoint</span>
+<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Add move_number column</span></span>
+<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a>        new_rows<span class="sc">$</span>within_action_number <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span>i</span>
+<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Append to the result dataframe</span></span>
+<span id="cb15-31"><a href="#cb15-31" aria-hidden="true" tabindex="-1"></a>        result <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(result, new_rows)</span>
+<span id="cb15-32"><a href="#cb15-32" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb15-33"><a href="#cb15-33" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb15-34"><a href="#cb15-34" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb15-35"><a href="#cb15-35" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Store the result dataframe in the list with the model type as the name</span></span>
+<span id="cb15-36"><a href="#cb15-36" aria-hidden="true" tabindex="-1"></a>    results[[model_type]] <span class="ot">&lt;-</span> result</span>
+<span id="cb15-37"><a href="#cb15-37" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb15-38"><a href="#cb15-38" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb15-39"><a href="#cb15-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(results)</span>
+<span id="cb15-40"><a href="#cb15-40" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb15-41"><a href="#cb15-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-42"><a href="#cb15-42" aria-hidden="true" tabindex="-1"></a><span class="co"># Run the function</span></span>
+<span id="cb15-43"><a href="#cb15-43" aria-hidden="true" tabindex="-1"></a>data_moves_list <span class="ot">&lt;-</span> <span class="fu">process_data</span>(data)</span>
+<span id="cb15-44"><a href="#cb15-44" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(data_moves_list) <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"m"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="compute-correct-string" class="level3">
+<h3 class="anchored" data-anchor-id="compute-correct-string">Compute correct string</h3>
+<p>This function computes the correct string choice in each move, based on a comparison of the current viewpoint and the viewpoint within which that string was added. Having the correct string choice column makes it easier when we want to add or remove strings, to look for the correct one.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>compute_string_choice <span class="ot">&lt;-</span> <span class="cf">function</span>(df) {</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">string_choice =</span> <span class="fu">ifelse</span>(action_number <span class="sc">==</span> within_action_number, </span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>                                  <span class="st">"view1"</span>, </span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>                                  <span class="fu">paste0</span>(<span class="st">"view"</span>, ((<span class="dv">1</span> <span class="sc">+</span> (overall_viewpoint <span class="sc">-</span> view_of_addition) <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">%%</span> <span class="dv">4</span> <span class="sc">+</span> <span class="dv">1</span>))))</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(df)</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>data_moves_list <span class="ot">&lt;-</span> <span class="fu">lapply</span>(data_moves_list, compute_string_choice)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="creating-paths" class="level2">
+<h2 class="anchored" data-anchor-id="creating-paths">Creating paths</h2>
+<section id="function-to-create-original-states-post-actions" class="level3">
+<h3 class="anchored" data-anchor-id="function-to-create-original-states-post-actions">Function to create original states post actions</h3>
+<p>This function creates a column called concatenated_moves, which gives us all the moves involved in the current model, after the action of that row is completed. Essentially this builds us our states column. It works by taking the correct string (From compute string, from viewpoint computing), and either adding it to a larger string, or removing it (or it’s isotopes) from the string, based on whether it’s a construct, deconstruct or fall move.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>create_concatenated_moves <span class="ot">&lt;-</span> <span class="cf">function</span>(df) {</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Initialize the progress bar</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  pb <span class="ot">&lt;-</span> progress_bar<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">format =</span> <span class="st">"  Processing [:bar] :percent in :elapsed"</span>,</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">total =</span> <span class="fu">nrow</span>(df),</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">clear =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">width =</span> <span class="dv">60</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Initialize an empty column for concatenated_moves</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>  df<span class="sc">$</span>concatenated_moves <span class="ot">&lt;-</span> <span class="st">""</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Loop through each participant and move number</span></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>  participants <span class="ot">&lt;-</span> <span class="fu">unique</span>(df<span class="sc">$</span>ID_id)</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (participant <span class="cf">in</span> participants) {</span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>    df_participant <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span> <span class="fu">filter</span>(ID_id <span class="sc">==</span> participant)</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>    move_numbers <span class="ot">&lt;-</span> <span class="fu">unique</span>(df_participant<span class="sc">$</span>action_number)</span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (move_number <span class="cf">in</span> move_numbers) {</span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>      df_action <span class="ot">&lt;-</span> df_participant <span class="sc">%&gt;%</span> <span class="fu">filter</span>(action_number <span class="sc">==</span> move_number)</span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>      concatenated_moves <span class="ot">&lt;-</span> <span class="st">""</span></span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>      <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(df_action)) {</span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a>        current_row <span class="ot">&lt;-</span> df_action[i, ]</span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a>        previous_row <span class="ot">&lt;-</span> <span class="cf">if</span> (i <span class="sc">&gt;</span> <span class="dv">1</span>) df_action[i <span class="sc">-</span> <span class="dv">1</span>, ] <span class="cf">else</span> <span class="cn">NULL</span></span>
+<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Reset concatenated_moves if Perspective_Orienting_direction_lr is "."</span></span>
+<span id="cb17-28"><a href="#cb17-28" aria-hidden="true" tabindex="-1"></a>        <span class="co"># and construct_action_offset is different from the previous row</span></span>
+<span id="cb17-29"><a href="#cb17-29" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(previous_row) <span class="sc">&amp;&amp;</span></span>
+<span id="cb17-30"><a href="#cb17-30" aria-hidden="true" tabindex="-1"></a>            current_row<span class="sc">$</span>Perspective_Orienting_direction_lr <span class="sc">==</span> <span class="st">"."</span> <span class="sc">&amp;&amp;</span></span>
+<span id="cb17-31"><a href="#cb17-31" aria-hidden="true" tabindex="-1"></a>            current_row<span class="sc">$</span>Construct_Action_offset <span class="sc">!=</span> previous_row<span class="sc">$</span>Construct_Action_offset) {</span>
+<span id="cb17-32"><a href="#cb17-32" aria-hidden="true" tabindex="-1"></a>          concatenated_moves <span class="ot">&lt;-</span> <span class="st">""</span></span>
+<span id="cb17-33"><a href="#cb17-33" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb17-34"><a href="#cb17-34" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb17-35"><a href="#cb17-35" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (current_row<span class="sc">$</span>Construct_Action_action_cd <span class="sc">==</span> <span class="st">"c"</span>) {</span>
+<span id="cb17-36"><a href="#cb17-36" aria-hidden="true" tabindex="-1"></a>          <span class="co"># Use string_choice to select the appropriate view column</span></span>
+<span id="cb17-37"><a href="#cb17-37" aria-hidden="true" tabindex="-1"></a>          view_col <span class="ot">&lt;-</span> current_row<span class="sc">$</span>string_choice</span>
+<span id="cb17-38"><a href="#cb17-38" aria-hidden="true" tabindex="-1"></a>          concatenated_moves <span class="ot">&lt;-</span> <span class="fu">paste0</span>(concatenated_moves, <span class="fu">ifelse</span>(concatenated_moves <span class="sc">==</span> <span class="st">""</span>, <span class="st">""</span>, <span class="st">", "</span>), current_row[[view_col]])</span>
+<span id="cb17-39"><a href="#cb17-39" aria-hidden="true" tabindex="-1"></a>        } <span class="cf">else</span> <span class="cf">if</span> (current_row<span class="sc">$</span>Construct_Action_action_cd <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"d"</span>, <span class="st">"f"</span>)) {</span>
+<span id="cb17-40"><a href="#cb17-40" aria-hidden="true" tabindex="-1"></a>          <span class="co"># Check and remove strings from concatenated_moves</span></span>
+<span id="cb17-41"><a href="#cb17-41" aria-hidden="true" tabindex="-1"></a>          <span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>) {</span>
+<span id="cb17-42"><a href="#cb17-42" aria-hidden="true" tabindex="-1"></a>            view_col <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"view"</span>, j)</span>
+<span id="cb17-43"><a href="#cb17-43" aria-hidden="true" tabindex="-1"></a>            below_col <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"below"</span>, j)</span>
+<span id="cb17-44"><a href="#cb17-44" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> (current_row[[view_col]] <span class="sc">%in%</span> <span class="fu">strsplit</span>(concatenated_moves, <span class="st">", "</span>)[[<span class="dv">1</span>]]) {</span>
+<span id="cb17-45"><a href="#cb17-45" aria-hidden="true" tabindex="-1"></a>              concatenated_moves <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="fu">paste0</span>(<span class="st">", "</span>, current_row[[view_col]]), <span class="st">""</span>, concatenated_moves)</span>
+<span id="cb17-46"><a href="#cb17-46" aria-hidden="true" tabindex="-1"></a>              concatenated_moves <span class="ot">&lt;-</span> <span class="fu">gsub</span>(current_row[[view_col]], <span class="st">""</span>, concatenated_moves)</span>
+<span id="cb17-47"><a href="#cb17-47" aria-hidden="true" tabindex="-1"></a>            }</span>
+<span id="cb17-48"><a href="#cb17-48" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> (current_row[[below_col]] <span class="sc">%in%</span> <span class="fu">strsplit</span>(concatenated_moves, <span class="st">", "</span>)[[<span class="dv">1</span>]]) {</span>
+<span id="cb17-49"><a href="#cb17-49" aria-hidden="true" tabindex="-1"></a>              concatenated_moves <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="fu">paste0</span>(<span class="st">", "</span>, current_row[[below_col]]), <span class="st">""</span>, concatenated_moves)</span>
+<span id="cb17-50"><a href="#cb17-50" aria-hidden="true" tabindex="-1"></a>              concatenated_moves <span class="ot">&lt;-</span> <span class="fu">gsub</span>(current_row[[below_col]], <span class="st">""</span>, concatenated_moves)</span>
+<span id="cb17-51"><a href="#cb17-51" aria-hidden="true" tabindex="-1"></a>            }</span>
+<span id="cb17-52"><a href="#cb17-52" aria-hidden="true" tabindex="-1"></a>          }</span>
+<span id="cb17-53"><a href="#cb17-53" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb17-54"><a href="#cb17-54" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb17-55"><a href="#cb17-55" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Update the concatenated_moves column</span></span>
+<span id="cb17-56"><a href="#cb17-56" aria-hidden="true" tabindex="-1"></a>        df<span class="sc">$</span>concatenated_moves[df<span class="sc">$</span>ID_id <span class="sc">==</span> participant <span class="sc">&amp;</span> df<span class="sc">$</span>action_number <span class="sc">==</span> move_number] <span class="ot">&lt;-</span> concatenated_moves</span>
+<span id="cb17-57"><a href="#cb17-57" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb17-58"><a href="#cb17-58" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Update the progress bar</span></span>
+<span id="cb17-59"><a href="#cb17-59" aria-hidden="true" tabindex="-1"></a>        pb<span class="sc">$</span><span class="fu">tick</span>()</span>
+<span id="cb17-60"><a href="#cb17-60" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb17-61"><a href="#cb17-61" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb17-62"><a href="#cb17-62" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb17-63"><a href="#cb17-63" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb17-64"><a href="#cb17-64" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(df)</span>
+<span id="cb17-65"><a href="#cb17-65" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb17-66"><a href="#cb17-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-67"><a href="#cb17-67" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply the function to all dataframes in the list</span></span>
+<span id="cb17-68"><a href="#cb17-68" aria-hidden="true" tabindex="-1"></a>data_moves_list <span class="ot">&lt;-</span> <span class="fu">lapply</span>(data_moves_list, create_concatenated_moves)</span>
+<span id="cb17-69"><a href="#cb17-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-70"><a href="#cb17-70" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter each dataframe to keep only the last row for each ID_id and action_number</span></span>
+<span id="cb17-71"><a href="#cb17-71" aria-hidden="true" tabindex="-1"></a>data_moves_list <span class="ot">&lt;-</span> <span class="fu">lapply</span>(data_moves_list, <span class="cf">function</span>(df) {</span>
+<span id="cb17-72"><a href="#cb17-72" aria-hidden="true" tabindex="-1"></a>  df <span class="sc">%&gt;%</span></span>
+<span id="cb17-73"><a href="#cb17-73" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(ID_id, action_number) <span class="sc">%&gt;%</span></span>
+<span id="cb17-74"><a href="#cb17-74" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(<span class="fu">row_number</span>() <span class="sc">==</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb17-75"><a href="#cb17-75" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ungroup</span>()</span>
+<span id="cb17-76"><a href="#cb17-76" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="rejoining-moves" class="level3">
+<h3 class="anchored" data-anchor-id="rejoining-moves">Rejoining moves</h3>
+<p>There are two ways in which moves which were technically done together are currently split up. 1. We manually split up single moves which had two relational blocks earlier on to make it easier to create paths. 2. If moves were done concurrently we coded them as one frame apart. The below function ensures that in both these cases, this is now seen as one move, i.e.&nbsp;the real_action_number stays the same.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>transform_df <span class="ot">&lt;-</span> <span class="cf">function</span>(df) {</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  df <span class="sc">%&gt;%</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(ID_id) <span class="sc">%&gt;%</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">real_action_number =</span> <span class="fu">cumsum</span>(</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>      <span class="fu">is.na</span>(<span class="fu">lag</span>(Construct_Action_action_cd)) <span class="sc">|</span> </span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">is.na</span>(<span class="fu">lag</span>(Construct_Action_offset)) <span class="sc">|</span> </span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>      Construct_Action_action_cd <span class="sc">!=</span> <span class="fu">lag</span>(Construct_Action_action_cd) <span class="sc">|</span> </span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>      <span class="fu">abs</span>(Construct_Action_offset <span class="sc">-</span> <span class="fu">lag</span>(Construct_Action_offset)) <span class="sc">&gt;=</span> <span class="dv">200</span> <span class="sc">|</span> </span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>      <span class="fu">row_number</span>() <span class="sc">==</span> <span class="dv">1</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>    )) <span class="sc">%&gt;%</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ungroup</span>()</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply the function to each dataframe in the list</span></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>data_moves_list <span class="ot">&lt;-</span> <span class="fu">lapply</span>(data_moves_list, transform_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="finding-correct-moves-and-states" class="level2">
+<h2 class="anchored" data-anchor-id="finding-correct-moves-and-states">Finding correct moves and states</h2>
+<p>The below functions check and returns if moves are correct or not by comparing them to the correct_moves dfs. The one after, does a similar thing for states. It checks whether every string included in the state comes from THE SAME VIEWPOINT in the correct_moves dfs, confirming that the model is correct. In order for the model to be correct, the moves need to be correct but also all from the same viewpoint.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Function to check if view1 string is in any column of correct_moves or set to "deconstruct"</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>check_move_correct <span class="ot">&lt;-</span> <span class="cf">function</span>(df, correct_moves) {</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rowwise</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">move_correct =</span> <span class="fu">if_else</span>(Construct_Action_action_cd <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"d"</span>, <span class="st">"f"</span>), </span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>                                  <span class="st">"deconstruct"</span>, </span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>                                  <span class="fu">as.character</span>(<span class="fu">any</span>(view1 <span class="sc">%in%</span> <span class="fu">unlist</span>(correct_moves))))) <span class="sc">%&gt;%</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ungroup</span>()</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(df)</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Function to apply check_move_correct to each pair of dataframes in the lists</span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>apply_check_move_correct <span class="ot">&lt;-</span> <span class="cf">function</span>(data_moves_list, correct_moves_list) {</span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>  result_list <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_along</span>(data_moves_list)) {</span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>    df <span class="ot">&lt;-</span> data_moves_list[[i]]</span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>    correct_moves <span class="ot">&lt;-</span> correct_moves_list[[i]]</span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>    result_list[[i]] <span class="ot">&lt;-</span> <span class="fu">check_move_correct</span>(df, correct_moves)</span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(result_list) <span class="ot">&lt;-</span> <span class="fu">names</span>(data_moves_list)</span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(result_list)</span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply the function</span></span>
+<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a>data_moves_list <span class="ot">&lt;-</span> <span class="fu">apply_check_move_correct</span>(data_moves_list, correct_moves_list)</span>
+<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Function to check if all strings in concatenated_moves are in the corresponding view or below columns of correct_moves</span></span>
+<span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a>check_moves <span class="ot">&lt;-</span> <span class="cf">function</span>(df, correct_moves) {</span>
+<span id="cb19-29"><a href="#cb19-29" aria-hidden="true" tabindex="-1"></a>  df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb19-30"><a href="#cb19-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rowwise</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb19-31"><a href="#cb19-31" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">state_correct =</span> {</span>
+<span id="cb19-32"><a href="#cb19-32" aria-hidden="true" tabindex="-1"></a>      moves <span class="ot">&lt;-</span> <span class="fu">str_split</span>(concatenated_moves, <span class="st">",</span><span class="sc">\\</span><span class="st">s*"</span>)[[<span class="dv">1</span>]]</span>
+<span id="cb19-33"><a href="#cb19-33" aria-hidden="true" tabindex="-1"></a>      moves <span class="ot">&lt;-</span> moves[moves <span class="sc">!=</span> <span class="st">""</span> <span class="sc">&amp;</span> moves <span class="sc">!=</span> <span class="st">" "</span>]  <span class="co"># Remove empty strings</span></span>
+<span id="cb19-34"><a href="#cb19-34" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">length</span>(moves) <span class="sc">==</span> <span class="dv">0</span>) {</span>
+<span id="cb19-35"><a href="#cb19-35" aria-hidden="true" tabindex="-1"></a>        <span class="cn">FALSE</span></span>
+<span id="cb19-36"><a href="#cb19-36" aria-hidden="true" tabindex="-1"></a>      } <span class="cf">else</span> <span class="cf">if</span> (<span class="fu">length</span>(moves) <span class="sc">==</span> <span class="dv">1</span>) {</span>
+<span id="cb19-37"><a href="#cb19-37" aria-hidden="true" tabindex="-1"></a>        <span class="fu">any</span>(moves <span class="sc">%in%</span> <span class="fu">unlist</span>(correct_moves))</span>
+<span id="cb19-38"><a href="#cb19-38" aria-hidden="true" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
+<span id="cb19-39"><a href="#cb19-39" aria-hidden="true" tabindex="-1"></a>        columns <span class="ot">&lt;-</span> <span class="fu">sapply</span>(moves, <span class="cf">function</span>(move) {</span>
+<span id="cb19-40"><a href="#cb19-40" aria-hidden="true" tabindex="-1"></a>          col <span class="ot">&lt;-</span> <span class="fu">which</span>(<span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="cf">function</span>(i) {</span>
+<span id="cb19-41"><a href="#cb19-41" aria-hidden="true" tabindex="-1"></a>            move <span class="sc">%in%</span> correct_moves[[<span class="fu">paste0</span>(<span class="st">"view"</span>, i)]] <span class="sc">|</span> move <span class="sc">%in%</span> correct_moves[[<span class="fu">paste0</span>(<span class="st">"below"</span>, i)]]</span>
+<span id="cb19-42"><a href="#cb19-42" aria-hidden="true" tabindex="-1"></a>          }))</span>
+<span id="cb19-43"><a href="#cb19-43" aria-hidden="true" tabindex="-1"></a>          <span class="cf">if</span> (<span class="fu">length</span>(col) <span class="sc">&gt;</span> <span class="dv">0</span>) col <span class="cf">else</span> <span class="cn">NA</span></span>
+<span id="cb19-44"><a href="#cb19-44" aria-hidden="true" tabindex="-1"></a>        })</span>
+<span id="cb19-45"><a href="#cb19-45" aria-hidden="true" tabindex="-1"></a>        <span class="fu">all</span>(<span class="sc">!</span><span class="fu">is.na</span>(columns)) <span class="sc">&amp;&amp;</span> <span class="fu">length</span>(<span class="fu">unique</span>(columns)) <span class="sc">&lt;=</span> <span class="dv">4</span></span>
+<span id="cb19-46"><a href="#cb19-46" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb19-47"><a href="#cb19-47" aria-hidden="true" tabindex="-1"></a>    }) <span class="sc">%&gt;%</span></span>
+<span id="cb19-48"><a href="#cb19-48" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ungroup</span>()</span>
+<span id="cb19-49"><a href="#cb19-49" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(df)</span>
+<span id="cb19-50"><a href="#cb19-50" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb19-51"><a href="#cb19-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-52"><a href="#cb19-52" aria-hidden="true" tabindex="-1"></a><span class="co"># Function to apply check_moves to each pair of dataframes in the lists</span></span>
+<span id="cb19-53"><a href="#cb19-53" aria-hidden="true" tabindex="-1"></a>apply_check_moves <span class="ot">&lt;-</span> <span class="cf">function</span>(data_moves_list, correct_moves_list) {</span>
+<span id="cb19-54"><a href="#cb19-54" aria-hidden="true" tabindex="-1"></a>  result_list <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb19-55"><a href="#cb19-55" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_along</span>(data_moves_list)) {</span>
+<span id="cb19-56"><a href="#cb19-56" aria-hidden="true" tabindex="-1"></a>    df <span class="ot">&lt;-</span> data_moves_list[[i]]</span>
+<span id="cb19-57"><a href="#cb19-57" aria-hidden="true" tabindex="-1"></a>    correct_moves <span class="ot">&lt;-</span> correct_moves_list[[i]]</span>
+<span id="cb19-58"><a href="#cb19-58" aria-hidden="true" tabindex="-1"></a>    result_list[[i]] <span class="ot">&lt;-</span> <span class="fu">check_moves</span>(df, correct_moves)</span>
+<span id="cb19-59"><a href="#cb19-59" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb19-60"><a href="#cb19-60" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(result_list) <span class="ot">&lt;-</span> <span class="fu">names</span>(data_moves_list)</span>
+<span id="cb19-61"><a href="#cb19-61" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(result_list)</span>
+<span id="cb19-62"><a href="#cb19-62" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb19-63"><a href="#cb19-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-64"><a href="#cb19-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-65"><a href="#cb19-65" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply the function</span></span>
+<span id="cb19-66"><a href="#cb19-66" aria-hidden="true" tabindex="-1"></a>data_moves_list <span class="ot">&lt;-</span> <span class="fu">apply_check_moves</span>(data_moves_list, correct_moves_list)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="assigning-move-ids" class="level2">
+<h2 class="anchored" data-anchor-id="assigning-move-ids">Assigning move IDs</h2>
+<p>Now we assign moves unique IDs, this will make it easier to create trees and compare same moves. Note, we waited until now to do this as we no longer need to compare viewpoints… We assign move IDs and then use these to create state IDs</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>assign_move_ID <span class="ot">&lt;-</span> <span class="cf">function</span>(data_moves_list) {</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  move_ID_list <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_along</span>(data_moves_list)) {</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    move_counter <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    move_dict <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>    unique_moves <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>    data_moves_list[[i]] <span class="ot">&lt;-</span> data_moves_list[[i]] <span class="sc">%&gt;%</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>      <span class="fu">rowwise</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>      <span class="fu">mutate</span>(<span class="at">move_ID =</span> {</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>        move_strings <span class="ot">&lt;-</span> <span class="fu">c</span>(view1, view2, view3, view4, below1, below2, below3, below4)</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>        existing_move_ID <span class="ot">&lt;-</span> <span class="cn">NA</span></span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> (move <span class="cf">in</span> move_strings) {</span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>          <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.na</span>(move) <span class="sc">&amp;&amp;</span> move <span class="sc">%in%</span> <span class="fu">names</span>(move_dict)) {</span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>            existing_move_ID <span class="ot">&lt;-</span> move_dict[[move]]</span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>            <span class="cf">break</span></span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a>          }</span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (<span class="fu">is.na</span>(existing_move_ID)) {</span>
+<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a>          move_counter <span class="ot">&lt;&lt;-</span> move_counter <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a>          move_ID <span class="ot">&lt;-</span> move_counter</span>
+<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a>          <span class="cf">for</span> (move <span class="cf">in</span> move_strings) {</span>
+<span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.na</span>(move)) {</span>
+<span id="cb20-27"><a href="#cb20-27" aria-hidden="true" tabindex="-1"></a>              move_dict[[move]] <span class="ot">&lt;&lt;-</span> move_ID</span>
+<span id="cb20-28"><a href="#cb20-28" aria-hidden="true" tabindex="-1"></a>            }</span>
+<span id="cb20-29"><a href="#cb20-29" aria-hidden="true" tabindex="-1"></a>          }</span>
+<span id="cb20-30"><a href="#cb20-30" aria-hidden="true" tabindex="-1"></a>          unique_moves[[move_ID]] <span class="ot">&lt;-</span> move_strings</span>
+<span id="cb20-31"><a href="#cb20-31" aria-hidden="true" tabindex="-1"></a>        } <span class="cf">else</span> {</span>
+<span id="cb20-32"><a href="#cb20-32" aria-hidden="true" tabindex="-1"></a>          move_ID <span class="ot">&lt;-</span> existing_move_ID</span>
+<span id="cb20-33"><a href="#cb20-33" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb20-34"><a href="#cb20-34" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb20-35"><a href="#cb20-35" aria-hidden="true" tabindex="-1"></a>        move_ID</span>
+<span id="cb20-36"><a href="#cb20-36" aria-hidden="true" tabindex="-1"></a>      }) <span class="sc">%&gt;%</span></span>
+<span id="cb20-37"><a href="#cb20-37" aria-hidden="true" tabindex="-1"></a>      <span class="fu">ungroup</span>()</span>
+<span id="cb20-38"><a href="#cb20-38" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb20-39"><a href="#cb20-39" aria-hidden="true" tabindex="-1"></a>    move_ID_list[[i]] <span class="ot">&lt;-</span> data_moves_list[[i]] <span class="sc">%&gt;%</span></span>
+<span id="cb20-40"><a href="#cb20-40" aria-hidden="true" tabindex="-1"></a>      <span class="fu">select</span>(view1, view2, view3, view4, below1, below2, below3, below4, move_ID) <span class="sc">%&gt;%</span></span>
+<span id="cb20-41"><a href="#cb20-41" aria-hidden="true" tabindex="-1"></a>      <span class="fu">distinct</span>(move_ID, <span class="at">.keep_all =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb20-42"><a href="#cb20-42" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb20-43"><a href="#cb20-43" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-44"><a href="#cb20-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(move_ID_list)</span>
+<span id="cb20-45"><a href="#cb20-45" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb20-46"><a href="#cb20-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-47"><a href="#cb20-47" aria-hidden="true" tabindex="-1"></a>move_ID <span class="ot">&lt;-</span> <span class="fu">assign_move_ID</span>(data_moves_list)</span>
+<span id="cb20-48"><a href="#cb20-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-49"><a href="#cb20-49" aria-hidden="true" tabindex="-1"></a>convert_to_state <span class="ot">&lt;-</span> <span class="cf">function</span>(data_moves_list, move_ID_list) {</span>
+<span id="cb20-50"><a href="#cb20-50" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_along</span>(data_moves_list)) {</span>
+<span id="cb20-51"><a href="#cb20-51" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Create a dictionary of move strings to move_IDs from move_ID_list</span></span>
+<span id="cb20-52"><a href="#cb20-52" aria-hidden="true" tabindex="-1"></a>    move_dict <span class="ot">&lt;-</span> move_ID_list[[i]] <span class="sc">%&gt;%</span></span>
+<span id="cb20-53"><a href="#cb20-53" aria-hidden="true" tabindex="-1"></a>      <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="sc">-</span>move_ID, <span class="at">values_drop_na =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb20-54"><a href="#cb20-54" aria-hidden="true" tabindex="-1"></a>      <span class="fu">distinct</span>(value, move_ID) <span class="sc">%&gt;%</span></span>
+<span id="cb20-55"><a href="#cb20-55" aria-hidden="true" tabindex="-1"></a>      <span class="fu">deframe</span>()</span>
+<span id="cb20-56"><a href="#cb20-56" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb20-57"><a href="#cb20-57" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Convert concatenated_moves to state</span></span>
+<span id="cb20-58"><a href="#cb20-58" aria-hidden="true" tabindex="-1"></a>    data_moves_list[[i]] <span class="ot">&lt;-</span> data_moves_list[[i]] <span class="sc">%&gt;%</span></span>
+<span id="cb20-59"><a href="#cb20-59" aria-hidden="true" tabindex="-1"></a>      <span class="fu">rowwise</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb20-60"><a href="#cb20-60" aria-hidden="true" tabindex="-1"></a>      <span class="fu">mutate</span>(<span class="at">state =</span> {</span>
+<span id="cb20-61"><a href="#cb20-61" aria-hidden="true" tabindex="-1"></a>        moves <span class="ot">&lt;-</span> <span class="fu">str_split</span>(concatenated_moves, <span class="st">", "</span>)[[<span class="dv">1</span>]]</span>
+<span id="cb20-62"><a href="#cb20-62" aria-hidden="true" tabindex="-1"></a>        move_ids <span class="ot">&lt;-</span> <span class="fu">sapply</span>(moves, <span class="cf">function</span>(move) {</span>
+<span id="cb20-63"><a href="#cb20-63" aria-hidden="true" tabindex="-1"></a>          <span class="cf">if</span> (move <span class="sc">!=</span> <span class="st">""</span> <span class="sc">&amp;&amp;</span> move <span class="sc">%in%</span> <span class="fu">names</span>(move_dict)) {</span>
+<span id="cb20-64"><a href="#cb20-64" aria-hidden="true" tabindex="-1"></a>            move_dict[[move]]</span>
+<span id="cb20-65"><a href="#cb20-65" aria-hidden="true" tabindex="-1"></a>          } <span class="cf">else</span> {</span>
+<span id="cb20-66"><a href="#cb20-66" aria-hidden="true" tabindex="-1"></a>            <span class="cn">NA</span>  <span class="co"># Handle missing or empty moves</span></span>
+<span id="cb20-67"><a href="#cb20-67" aria-hidden="true" tabindex="-1"></a>          }</span>
+<span id="cb20-68"><a href="#cb20-68" aria-hidden="true" tabindex="-1"></a>        })</span>
+<span id="cb20-69"><a href="#cb20-69" aria-hidden="true" tabindex="-1"></a>        sorted_move_ids <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">na.omit</span>(move_ids))</span>
+<span id="cb20-70"><a href="#cb20-70" aria-hidden="true" tabindex="-1"></a>        state <span class="ot">&lt;-</span> <span class="fu">paste</span>(sorted_move_ids, <span class="at">collapse =</span> <span class="st">", "</span>)</span>
+<span id="cb20-71"><a href="#cb20-71" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (state <span class="sc">==</span> <span class="st">""</span>) <span class="st">"0"</span> <span class="cf">else</span> state</span>
+<span id="cb20-72"><a href="#cb20-72" aria-hidden="true" tabindex="-1"></a>      }) <span class="sc">%&gt;%</span></span>
+<span id="cb20-73"><a href="#cb20-73" aria-hidden="true" tabindex="-1"></a>      <span class="fu">ungroup</span>()</span>
+<span id="cb20-74"><a href="#cb20-74" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb20-75"><a href="#cb20-75" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-76"><a href="#cb20-76" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(data_moves_list)</span>
+<span id="cb20-77"><a href="#cb20-77" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb20-78"><a href="#cb20-78" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-79"><a href="#cb20-79" aria-hidden="true" tabindex="-1"></a>data_moves_list <span class="ot">&lt;-</span> <span class="fu">convert_to_state</span>(data_moves_list, move_ID)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="data-needed-for-trees" class="level2">
+<h2 class="anchored" data-anchor-id="data-needed-for-trees">Data needed for trees</h2>
+<p>Now we have the state and move columns to tell us the state after each move, allowing us to put into graphical structure. However, there are a few more variables we need to have fully informative graphs.</p>
+<p>First, we extract number of blocks in each state, this will allow us to define the direction of each edge (positive or negative).</p>
+<p>We then create edges by creating node_to and node_from columns. Importantly, here we make sure that if a move is several moves, it takes the FIRST node_from and LAST node_to.</p>
+<p>After, we create direction based on how the number of blocks in each state changes, and lastly we create a frequency column which tells us how many times this edge occurs.</p>
+<p>##still have the issue of if we start building again.. can use . to change it but then the arrows won’t flow in the graph..</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Function to count unique blocks</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>count_blocks <span class="ot">&lt;-</span> <span class="cf">function</span>(string) {</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Extract all occurrences of the specified blocks within longer strings</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  blocks <span class="ot">&lt;-</span> <span class="fu">str_extract_all</span>(string, <span class="st">"(bl|bs|yl|ys|gs|gl|rl|rs)"</span>)[[<span class="dv">1</span>]]</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Ensure the blocks are unique</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  unique_blocks <span class="ot">&lt;-</span> <span class="fu">unique</span>(blocks)</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Count the number of unique blocks</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">length</span>(unique_blocks)</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>data_moves_list <span class="ot">&lt;-</span> <span class="fu">lapply</span>(data_moves_list, <span class="cf">function</span>(df) {</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>  df <span class="sc">%&gt;%</span></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">arrange</span>(ID_id, real_action_number) <span class="sc">%&gt;%</span></span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">blocks_in =</span> <span class="fu">sapply</span>(concatenated_moves, count_blocks)) <span class="sc">%&gt;%</span></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">node_to =</span> state,</span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>           <span class="at">node_from =</span> <span class="fu">lag</span>(state)) <span class="sc">%&gt;%</span></span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">node_from =</span> <span class="fu">ifelse</span>(real_action_number <span class="sc">==</span> <span class="dv">1</span>, <span class="st">"0"</span>, node_from)) <span class="sc">%&gt;%</span></span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(ID_id, real_action_number) <span class="sc">%&gt;%</span></span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">node_from =</span> <span class="fu">first</span>(node_from[action_number <span class="sc">==</span> <span class="fu">min</span>(action_number)]),</span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>           <span class="at">node_to =</span> <span class="fu">first</span>(node_to[action_number <span class="sc">==</span> <span class="fu">max</span>(action_number)])) <span class="sc">%&gt;%</span></span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(action_number <span class="sc">==</span> <span class="fu">max</span>(action_number)) <span class="sc">%&gt;%</span></span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(ID_id, Task_model_type) <span class="sc">%&gt;%</span></span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">direction =</span> <span class="fu">ifelse</span>(node_from <span class="sc">==</span> <span class="st">"0"</span>, <span class="st">"positive"</span>,</span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>                              <span class="fu">ifelse</span>(blocks_in <span class="sc">&gt;</span> <span class="fu">lag</span>(blocks_in, <span class="at">default =</span> <span class="fu">first</span>(blocks_in)), <span class="st">"positive"</span>,</span>
+<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a>                                     <span class="fu">ifelse</span>(blocks_in <span class="sc">&lt;</span> <span class="fu">lag</span>(blocks_in, <span class="at">default =</span> <span class="fu">first</span>(blocks_in)), <span class="st">"negative"</span>, <span class="cn">NA</span>)))) <span class="sc">%&gt;%</span></span>
+<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(node_from, node_to) <span class="sc">%&gt;%</span></span>
+<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">frequency =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb21-30"><a href="#cb21-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ungroup</span>()</span>
+<span id="cb21-31"><a href="#cb21-31" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="making-graphs" class="level2">
+<h2 class="anchored" data-anchor-id="making-graphs">Making Graphs!</h2>
+<p>This makes the overall graph for each model.</p>
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: The `&lt;scale&gt;` argument of `guides()` cannot be `FALSE`. Use "none" instead as
+of ggplot2 3.3.4.</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-15-2.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-15-3.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-15-4.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-15-5.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-15-6.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-15-7.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-15-8.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This makes the individual graphs for each participant.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-2.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-3.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-4.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-5.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-6.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-7.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-8.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-9.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-10.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-11.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-12.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-13.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-14.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-15.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-16.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-17.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-18.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-19.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-20.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-21.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-22.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-23.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-24.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-25.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-26.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-27.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-28.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-29.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-30.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-31.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-32.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-33.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-34.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-35.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-36.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-37.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-38.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-39.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-40.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-41.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-42.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-43.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-44.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-45.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-46.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-47.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-48.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-49.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-50.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-51.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-52.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-53.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-54.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-55.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-56.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-57.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-58.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-59.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-60.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-61.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-62.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-63.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-64.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-65.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-66.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-67.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-68.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-69.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-70.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-71.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-72.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-73.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-74.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-75.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-76.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-77.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-78.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-79.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-80.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-81.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-82.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-83.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-84.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-85.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-86.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-87.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-88.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-89.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-90.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-91.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-92.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-93.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-94.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-95.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-96.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-97.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-98.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-99.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-100.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-101.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-102.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-103.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-104.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-105.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-106.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-107.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-108.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-109.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-110.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-111.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-112.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-113.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-114.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-115.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-116.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-117.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-118.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-119.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-120.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-121.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-122.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-123.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-124.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-125.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-126.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-127.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-128.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-129.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-130.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-131.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-132.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-133.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-134.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-135.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-136.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-137.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-138.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-139.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-140.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-141.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-142.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-143.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-144.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="A-graph-theory-approach-for-testing-children-s-block-construction_files/figure-html/unnamed-chunk-16-145.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

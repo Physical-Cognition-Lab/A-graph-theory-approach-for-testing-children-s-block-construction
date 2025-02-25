@@ -14,6 +14,11 @@ library(progress)
 library(igraph)
 library(ggraph)
 library(tidygraph)
+library(Cairo)
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.width = 10, fig.height = 8, dev = "CairoPNG")
 ```
 
 ## Load in data
@@ -738,7 +743,10 @@ data_moves_list <- lapply(data_moves_list, function(df) {
 
 This makes the overall graph for each model.
 
-```{r}
+```{r, echo=FALSE, fig.width=10, fig.height=8}
+if (!dir.exists("figures")) {
+    dir.create("figures", recursive = TRUE)
+}
 # Define the function to create and plot the combined network graph without highlights
 create_combined_graph <- function(data, model_name) {
   # Create a graph object using node_from and node_to columns for all data
@@ -801,7 +809,7 @@ for (model_name in names(data_moves_list)) {
 
 This makes the individual graphs for each participant.
 
-```{r}
+```{r, echo=FALSE, fig.width=10, fig.height=8}
 # Define the function to create and plot the combined network graph for each participant
 create_combined_network_graph <- function(data, highlight_nodes, highlight_edges, participant_id, model_name) {
   # Create a graph object using node_from and node_to columns for all data
