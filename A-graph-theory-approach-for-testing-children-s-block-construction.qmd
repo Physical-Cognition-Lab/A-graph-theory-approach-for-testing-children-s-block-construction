@@ -796,7 +796,6 @@ create_combined_graph <- function(data, model_name) {
   # Print the plot
   print(p)
 }
-
 # Process each data frame in the list
 for (model_name in names(data_moves_list)) {
   df <- data_moves_list[[model_name]]
@@ -824,9 +823,6 @@ create_combined_network_graph <- function(data, highlight_nodes, highlight_edges
       NA
     }
   })
-  
-
-  
   # Set edge attributes
   E(g)$color <- "grey"
   
