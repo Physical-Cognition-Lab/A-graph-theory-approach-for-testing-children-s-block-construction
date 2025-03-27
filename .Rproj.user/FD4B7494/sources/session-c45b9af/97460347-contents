@@ -1,0 +1,211 @@
+graphs for ICDL
+```{r}
+m1 <- read.csv("m1.csv")
+branching_together <- read.csv("branching_adults.csv")
+branching_together$group <- "Adult"
+bran <- read.csv("branching_children.csv")
+bran$group <- "Child"
+branching_together <- rbind(branching_together, bran)
+```
+branching_factors <- data_moves_list[[1]] %>%
+  filter(move_correct != "deconstruct") %>%
+  group_by(node_from) %>%
+  summarize(
+    correct_moves = sum(move_correct == "TRUE"),
+    incorrect_moves = sum(move_correct == "FALSE"),
+    branching_factor = ifelse(correct_moves > 0, incorrect_moves / correct_moves, 1)
+  )
+```{r}
+
+summary_df <- branching_together %>%
+  group_by(group) %>%
+  summarize(
+    mean_branching_factor = mean(branching_factor, na.rm = TRUE),
+    se_branching_factor = sd(branching_factor, na.rm = TRUE) / sqrt(n())
+  )
+
+# Create the bar plot
+p <- ggplot(summary_df, aes(x = group, y = mean_branching_factor, fill = group)) +
+  geom_bar(stat = "identity", position = position_dodge(), width = 0.7) +
+  geom_errorbar(aes(ymin = mean_branching_factor - se_branching_factor, ymax = mean_branching_factor + se_branching_factor),
+                width = 0.2, position = position_dodge(0.7)) +
+  labs(title = "Mean Branching Factor (Model 1)",
+       x = "Group",
+       y = "Mean Branching Factor") +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Set2") +
+  theme(legend.position = "none")
+ggsave(filename = "branching_factor_plot.svg", plot = p, device = "svg", width = 8, height = 6)
+```
+
+```{r}
+moves_summary <- m1 %>%
+  group_by(ID_id) %>%
+  summarize(
+    highest_action_number = max(real_action_number, na.rm = TRUE)
+  ) %>%
+  mutate(group = ifelse(grepl("AD", ID_id), "Adult", ifelse(grepl("CI", ID_id), "Child", NA)))
+
+summary_df_moves <- moves_summary %>%
+  group_by(group) %>%
+  summarize(
+    mean_moves = mean(highest_action_number, na.rm = TRUE),
+    se_moves = sd(highest_action_number, na.rm = TRUE) / sqrt(n())
+  )
+# Create the bar plot
+p <- ggplot(summary_df_moves, aes(x = group, y = mean_moves, fill = group)) +
+  geom_bar(stat = "identity", position = position_dodge(), width = 0.7) +
+  geom_errorbar(aes(ymin = mean_moves - se_moves, ymax = mean_moves + se_moves),
+                width = 0.2, position = position_dodge(0.7)) +
+  labs(title =  "Mean Path Length (Model 1)",
+       x = "Group",
+       y = "Mean Path Length") +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Set2")  +  # Use the "D" option for a discrete color palette
+  theme(legend.position = "none")
+print(p)
+# Save the plot as an SVG file
+ggsave(filename = "mean_moves_plot.svg", plot = p, device = "svg", width = 8, height = 6)
+```
+
+
+recovery efficiency
+```{r}
+# Function to calculate recovery efficiency for each participant
+calculate_recovery_efficiency <- function(data) {
+  recovery_efficiency <- data.frame(ID_id = character(), length_of_incorrect_trail = integer(), stringsAsFactors = FALSE)
+  
+  for (id in unique(data$ID_id)) {
+    participant_data <- data %>% filter(ID_id == id)
+    in_incorrect_trail <- FALSE
+    start_index <- 0
+    
+    for (i in 1:nrow(participant_data)) {
+      if (participant_data$move_correct[i] == "FALSE" && !in_incorrect_trail) {
+        in_incorrect_trail <- TRUE
+        start_index <- i
+      }
+      
+      if (in_incorrect_trail && participant_data$state_correct[i] == TRUE) {
+        recovery_length <- i - start_index
+        recovery_efficiency <- rbind(recovery_efficiency, data.frame(ID_id = id, length_of_incorrect_trail = recovery_length))
+        in_incorrect_trail <- FALSE
+      }
+    }
+  }
+  
+  return(recovery_efficiency)
+}
+
+# Calculate recovery efficiency
+recovery_efficiency_df <- calculate_recovery_efficiency(m1)
+
+# Print the recovery efficiency data frame
+print(recovery_efficiency_df)
+
+recovery_efficiency_df <- recovery_efficiency_df%>%
+  mutate(group = ifelse(grepl("AD", ID_id), "Adult", ifelse(grepl("CI", ID_id), "Child", NA)))
+
+recovery_summary <- recovery_efficiency_df %>%
+  group_by(group) %>%
+  summarize(
+    mean_rec = mean(length_of_incorrect_trail, na.rm = TRUE),
+    se_rec = sd(length_of_incorrect_trail, na.rm = TRUE) / sqrt(n())
+  )
+
+# Create the bar plot
+p <- ggplot(recovery_summary, aes(x = group, y = mean_rec, fill = group)) +
+  geom_bar(stat = "identity", position = position_dodge(), width = 0.7) +
+  geom_errorbar(aes(ymin = mean_rec - se_rec, ymax = mean_rec + se_rec),
+                width = 0.2, position = position_dodge(0.7)) +
+  labs(title =  "Mean Recovery Efficiency (Model 1)",
+       x = "Group",
+       y = "Mean Recovery Efficiency") +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Set2")  +  # Use the "D" option for a discrete color palette
+  theme(legend.position = "none")
+print(p)
+# Save the plot as an SVG file
+ggsave(filename = "mean_rec_plot.svg", plot = p, device = "svg", width = 8, height = 6)
+```
+
+```{r}
+## Separate the data into adults and children
+adults <- m1 %>% filter(grepl("AD", ID_id))
+children <- m1 %>% filter(grepl("CI", ID_id))
+
+# Function to calculate in-degree and out-degree and include blocks_in
+calculate_degree <- function(data) {
+  in_degree <- data %>%
+    group_by(node_to) %>%
+    summarize(in_degree = n(), blocks_in = first(blocks_in)) %>%
+    rename(node = node_to)
+  
+  out_degree <- data %>%
+    group_by(node_from) %>%
+    summarize(out_degree = n()) %>%
+    rename(node = node_from)
+  
+  degree <- full_join(in_degree, out_degree, by = "node") %>%
+    replace_na(list(in_degree = 0, out_degree = 0))
+  
+  return(degree)
+}
+
+# Calculate degrees for adults and children
+degree_adults <- calculate_degree(adults)
+degree_adults <- degree_adults %>% mutate(group = "Adult")
+
+degree_children <- calculate_degree(children)
+degree_children <- degree_children %>% mutate(group = "Child")
+
+# Combine the degree data frames
+degree <- bind_rows(degree_adults, degree_children)
+
+# Print the degree data frame
+print(degree)
+
+degree_summary_df <- degree %>%
+  group_by(group, blocks_in) %>%
+  filter(blocks_in != 0) %>%
+  summarize(
+    mean_in_degree = mean(in_degree, na.rm = TRUE),
+    se_in_degree = sd(in_degree, na.rm = TRUE) / sqrt(n()),
+    mean_out_degree = mean(out_degree, na.rm = TRUE),
+    se_out_degree = sd(out_degree, na.rm = TRUE) / sqrt(n())
+  )
+
+```
+```{r}
+
+degree_summary_df_long <- degree_summary_df %>%
+  pivot_longer(cols = c(mean_in_degree, mean_out_degree, se_in_degree, se_out_degree),
+               names_to = c("measure", "type"),
+               names_pattern = "(mean|se)_(in|out)_degree") %>%
+  pivot_wider(names_from = measure, values_from = value)
+
+
+# Define custom colors
+custom_colors <- c("Adult.in" = "#66c2a5", "Adult.out" = "#238b45", 
+                   "Child.in" = "#fc8d62", "Child.out" = "#e31a1c")
+
+# Create the plot
+p <- ggplot(degree_summary_df_long, aes(x = factor(blocks_in), fill = interaction(group, type))) +
+  geom_bar(aes(y = mean), stat = "identity", position = position_dodge(), width = 0.7) +
+  geom_errorbar(aes(ymin = mean - se, ymax = mean + se),
+                width = 0.2, position = position_dodge(0.7)) +
+  labs(title = "In-Degree/ Out-Degree by Group and Blocks In",
+       x = "Number of Blocks",
+       y = "Mean Degree") +
+  theme_minimal() +
+  scale_fill_manual(values = custom_colors, 
+                    labels = c("Adult.in" = "Adult In-degree Distribution", 
+                               "Adult.out" = "Adult Out-degree Distribution", 
+                               "Child.in" = "Child In-degree Distribution", 
+                               "Child.out" = "Child Out-degree Distribution")) +
+  theme(legend.position = "top")
+
+# Save the plot as an SVG file
+ggsave(filename = "degree_comparison_blocks_in_plot.svg", plot = p, device = "svg", width = 10, height = 8)
+```
+

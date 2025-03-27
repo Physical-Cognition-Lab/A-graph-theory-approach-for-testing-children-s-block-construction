@@ -26,7 +26,7 @@ m5,bs,a,.,gl,v,-1,0
 m5,gl,a,v,yl,v,0,-1
 m5,gl,a,v,bl,h,0,2
 m5,yl,a,v,rl,h,-1,1
-m5,yl,a,v,.,ys,1,0
+m5,yl,a,v,ys,.,1,0
 m5,bl,a,h,rl,h,-1,-2
 m5,bl,a,h,gs,.,1,-1
 m6,rl,a,h,bl,v,1,1

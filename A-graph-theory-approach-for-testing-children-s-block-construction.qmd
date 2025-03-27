@@ -15,10 +15,7 @@ library(igraph)
 library(ggraph)
 library(tidygraph)
 library(Cairo)
-```
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, fig.width = 10, fig.height = 8, dev = "CairoPNG")
+library(tictoc)
 ```
 
 ## Load in data
@@ -26,7 +23,11 @@ knitr::opts_chunk$set(echo = TRUE, fig.width = 10, fig.height = 8, dev = "CairoP
 Here we load in our data file, in our case we have separate datafiles for children and adults. These files come from datavyu output, based on our coding manual.
 
 ```{r}
-data <- read.csv("data/adult_data2.csv") ## or "data/child_data.csv" 
+tic("total")
+#data <- read.csv("Data/child_data.csv")
+data <- read.csv("Data/adult_data2.csv")
+#data <- rbind(data, data1)
+## or "data/child_data.csv" 
 # Run a function that converts any columns that should be integer (i.e. onset/offset columns) to integer (for some reason some weren't)
 convert_to_integer <- function(df) {
   for (col in names(df)) {
@@ -183,7 +184,7 @@ data <- data %>%
     below4 = paste(b1_b4, a_b_b4, b1_v_h_b4, b2_b4, b2_v_h_b4, f_b_b4, l_r_b4, sep = "_")
   )
 data <- data %>%
-  select(ID_id, Task_model_type, Task_correct_final_ci, Construct_Action_onset, Construct_Action_offset, Construct_Action_action_cd, Perspective_Orienting_onset, Perspective_Orienting_offset, Perspective_Orienting_direction_lr, view1, view2, view3, view4, below1, below2, below3, below4)
+  select(ID_id, Task_model_type, Task_correct_final_ci, Task_onset, Construct_Action_onset, Construct_Action_offset, Construct_Action_action_cd, Perspective_Orienting_onset, Perspective_Orienting_offset, Perspective_Orienting_direction_lr, view1, view2, view3, view4, below1, below2, below3, below4)
 ```
 
 ### Reshaping Correct Moves
@@ -191,7 +192,7 @@ data <- data %>%
 We read in the base correct moves (i.e. only 5-8 possible correct moves for each participant). These moves are put in from N view. and then we create 'isotopes' as usual. This means that all moves in same column reflect correct moves from that view.
 
 ```{r}
-correct_moves <- read.csv("data/correct_moves_compact.csv")
+correct_moves <- read.csv("Data/correct_moves_compact.csv")
 
 # Create the second set of 7 columns
 correct_moves <- correct_moves %>%
@@ -229,7 +230,7 @@ correct_moves <- correct_moves %>%
     l_r_4 = ifelse(is.na(f_b), NA, -f_b)
   )
 
-# create below 1 
+# Create the below columns
 correct_moves <- correct_moves %>%
   mutate(
     b1_b = b2,
@@ -238,34 +239,21 @@ correct_moves <- correct_moves %>%
     b2_b = b1, 
     b2_v_h_b = b1_v_h,
     f_b_b = -f_b,
-    l_r_b = -l_r
-  )
-
-# create below 2
-correct_moves <- correct_moves %>%
-  mutate(
+    l_r_b = -l_r,
     b1_b2 = b2_2,
     a_b_b2 = ifelse(a_b_2 == "a", "b", ifelse(a_b == "b", "a", NA_character_)),
     b1_v_h_b2 = b2_v_h_2,
     b2_b2 = b1_2, 
     b2_v_h_b2 = b1_v_h_2,
     f_b_b2 = -f_b_2,
-    l_r_b2 = -l_r_2
-  )
-# create below 3
-correct_moves <- correct_moves %>%
-  mutate(
+    l_r_b2 = -l_r_2,
     b1_b3 = b2_3,
     a_b_b3 = ifelse(a_b_3 == "a", "b", ifelse(a_b == "b", "a", NA_character_)),
     b1_v_h_b3 = b2_v_h_3,
     b2_b3 = b1_3, 
     b2_v_h_b3 = b1_v_h_3,
     f_b_b3 = -f_b_3,
-    l_r_b3 = -l_r_3
-  )
-# create below 4
-correct_moves <- correct_moves %>%
-  mutate(
+    l_r_b3 = -l_r_3,
     b1_b4 = b2_4,
     a_b_b4 = ifelse(a_b_4 == "a", "b", ifelse(a_b == "b", "a", NA_character_)),
     b1_v_h_b4 = b2_v_h_4,
@@ -287,9 +275,19 @@ correct_moves <- correct_moves %>%
     below3 = paste(b1_b3, a_b_b3, b1_v_h_b3, b2_b3, b2_v_h_b3, f_b_b3, l_r_b3, sep = "_"),
     below4 = paste(b1_b4, a_b_b4, b1_v_h_b4, b2_b4, b2_v_h_b4, f_b_b4, l_r_b4, sep = "_")
   )
-correct_moves <- correct_moves %>%
-  select(model, view1, view2, view3, view4, below1, below2, below3, below4)
-correct_moves_list <- split(correct_moves, correct_moves$model)
+
+# Split into two dataframes and row bind them
+view_df <- correct_moves %>%
+  select(model, view1, view2, view3, view4)
+
+below_df <- correct_moves %>%
+  select(model, below1, below2, below3, below4) %>%
+  rename(view1 = below1, view2 = below2, view3 = below3, view4 = below4)
+
+combined_df <- bind_rows(view_df, below_df)
+
+# Split the combined dataframe by model
+correct_moves_list <- split(combined_df, combined_df$model)
 ```
 
 ### Reshaping Perspective Orienting to get viewpoints
@@ -538,6 +536,7 @@ data_moves_list <- lapply(data_moves_list, transform_df)
 
 The below functions check and returns if moves are correct or not by comparing them to the correct_moves dfs. The one after, does a similar thing for states. It checks whether every string included in the state comes from THE SAME VIEWPOINT in the correct_moves dfs, confirming that the model is correct. In order for the model to be correct, the moves need to be correct but also all from the same viewpoint.
 
+#thsi is having isseus with looking at when there are just two moves but they both feature in two columns. not sure why...
 ```{r}
 # Function to check if view1 string is in any column of correct_moves or set to "deconstruct"
 check_move_correct <- function(df, correct_moves) {
@@ -572,21 +571,36 @@ check_moves <- function(df, correct_moves) {
     mutate(state_correct = {
       moves <- str_split(concatenated_moves, ",\\s*")[[1]]
       moves <- moves[moves != "" & moves != " "]  # Remove empty strings
+      
       if (length(moves) == 0) {
         FALSE
-      } else if (length(moves) == 1) {
-        any(moves %in% unlist(correct_moves))
       } else {
-        columns <- sapply(moves, function(move) {
+        columns <- lapply(moves, function(move) {
           col <- which(sapply(1:4, function(i) {
-            move %in% correct_moves[[paste0("view", i)]] | move %in% correct_moves[[paste0("below", i)]]
+            move %in% correct_moves[[paste0("view", i)]]
           }))
           if (length(col) > 0) col else NA
         })
-        all(!is.na(columns)) && length(unique(columns)) <= 4
+        
+        if (length(moves) == 1) {
+          result <- !is.na(columns[[1]][1]) && length(columns[[1]]) > 0  # Check if the single move is found in any column
+        } else {
+          valid_columns <- columns[!sapply(columns, function(col) all(is.na(col)))]  # Exclude NA values from valid columns
+          
+          if (length(valid_columns) < length(columns)) {
+            result <- FALSE  # If there are NA values, result should be FALSE
+          } else {
+            common_column <- Reduce(intersect, valid_columns)  # Find common column among valid columns
+            
+            # Check if there is at least one common column and all valid columns contain the common column
+            result <- length(common_column) > 0 && all(sapply(valid_columns, function(col) length(intersect(col, common_column)) > 0))
+          }
+        }
+        
+        result
       }
     }) %>%
-    ungroup()
+    ungroup() 
   return(df)
 }
 
@@ -602,14 +616,17 @@ apply_check_moves <- function(data_moves_list, correct_moves_list) {
   return(result_list)
 }
 
-
-# Apply the function
+# Apply the function to all dataframes in the lists
 data_moves_list <- apply_check_moves(data_moves_list, correct_moves_list)
+
 ```
+
+
+
 
 ## Assigning move IDs
 
-Now we assign moves unique IDs, this will make it easier to create trees and compare same moves. Note, we waited until now to do this as we no longer need to compare viewpoints... We assign move IDs and then use these to create state IDs
+Now we assign moves unique IDs, this will make it easier to create trees and compare same moves. Note, we waited until now to do this as we no longer need to compare viewpoints... We assign move IDs and then use these to create state IDs We also make state go to 0 if the next move starts from scratch..
 
 ```{r}
 assign_move_ID <- function(data_moves_list) {
@@ -684,13 +701,32 @@ convert_to_state <- function(data_moves_list, move_ID_list) {
         state <- paste(sorted_move_ids, collapse = ", ")
         if (state == "") "0" else state
       }) %>%
-      ungroup()
+      ungroup() %>%
+      arrange(ID_id, real_action_number) %>%
+      group_by(ID_id) %>%
+      mutate(temp_state = ifelse(lead(Perspective_Orienting_direction_lr) == "." & lead(ID_id) == ID_id, "0", state)) %>%
+      ungroup() %>%
+      mutate(state = coalesce(temp_state, state)) %>%
+      select(-temp_state)
   }
   
   return(data_moves_list)
 }
 
+# Example usage
 data_moves_list <- convert_to_state(data_moves_list, move_ID)
+# Function to override state_correct when state is "0"
+override_state_correct <- function(data_moves_list) {
+  data_moves_list <- lapply(data_moves_list, function(df) {
+    df <- df %>%
+      mutate(state_correct = ifelse(state == "0", FALSE, state_correct))
+    return(df)
+  })
+  return(data_moves_list)
+}
+
+# Apply the function to all dataframes in the list
+data_moves_list <- override_state_correct(data_moves_list)
 ```
 
 ## Data needed for trees
@@ -706,6 +742,7 @@ After, we create direction based on how the number of blocks in each state chang
 ##still have the issue of if we start building again.. can use . to change it but then the arrows won't flow in the graph..
 
 ```{r}
+
 # Function to count unique blocks
 count_blocks <- function(string) {
   # Extract all occurrences of the specified blocks within longer strings
@@ -716,55 +753,95 @@ count_blocks <- function(string) {
   length(unique_blocks)
 }
 
-data_moves_list <- lapply(data_moves_list, function(df) {
-  df %>%
-    arrange(ID_id, real_action_number) %>%
-    mutate(blocks_in = sapply(concatenated_moves, count_blocks)) %>%
-    mutate(node_to = state,
-           node_from = lag(state)) %>%
-    mutate(node_from = ifelse(real_action_number == 1, "0", node_from)) %>%
-    group_by(ID_id, real_action_number) %>%
-    mutate(node_from = first(node_from[action_number == min(action_number)]),
-           node_to = first(node_to[action_number == max(action_number)])) %>%
-    filter(action_number == max(action_number)) %>%
-    ungroup() %>%
-    group_by(ID_id, Task_model_type) %>%
-    mutate(direction = ifelse(node_from == "0", "positive",
-                              ifelse(blocks_in > lag(blocks_in, default = first(blocks_in)), "positive",
-                                     ifelse(blocks_in < lag(blocks_in, default = first(blocks_in)), "negative", NA)))) %>%
-    ungroup() %>%
-    group_by(node_from, node_to) %>%
-    mutate(frequency = n()) %>%
-    ungroup()
-})
+# Function to process each data frame in the list
+process_data_moves_list <- function(data_moves_list) {
+  data_moves_list <- lapply(data_moves_list, function(df) {
+    N <- length(unique(df$ID_id))  # Calculate the number of participants
+    
+    df %>%
+      arrange(ID_id, real_action_number) %>%
+      mutate(blocks_in = sapply(concatenated_moves, count_blocks)) %>%
+      mutate(node_to = state,
+             node_from = lag(state)) %>%
+      mutate(node_from = ifelse(real_action_number == 1, "0", as.character(node_from))) %>%
+      group_by(ID_id, real_action_number) %>%
+      mutate(node_from = first(as.character(node_from[action_number == min(action_number)])),
+             node_to = first(node_to[action_number == max(action_number)])) %>%
+      filter(action_number == max(action_number)) %>%
+      ungroup() %>%
+      group_by(ID_id, Task_model_type) %>%
+      mutate(direction = ifelse(node_from == "0", "positive",
+                                ifelse(blocks_in > lag(blocks_in, default = first(blocks_in)), "positive",
+                                       ifelse(blocks_in < lag(blocks_in, default = first(blocks_in)), "negative", NA)))) %>%
+      ungroup() %>%
+      group_by(ID_id) %>%
+      mutate(node_to_state = state_correct,
+             node_from_state = ifelse(is.na(lag(state_correct)), FALSE, lag(state_correct))) %>%
+      ungroup() %>%
+    mutate(node_from_combined = paste(node_from, node_from_state, sep = "_"),
+           node_to_combined = paste(node_to, node_to_state, sep = "_")) %>%
+      group_by(node_from_combined, node_to_combined) %>%
+      mutate(frequency = n(),
+             edge_probability = frequency / N) %>%
+      ungroup()
+      
+  })
+  
+  return(data_moves_list)
+}
+
+
+data_moves_list <- process_data_moves_list(data_moves_list)
 ```
+
+```{r}
+
+distinct_data_moves_list <- list()
+
+# Iterate over each data frame in the original list
+for (model_name in names(data_moves_list)) {
+  df <- data_moves_list[[model_name]]
+
+  # Select distinct rows based on the combined columns
+  distinct_df <- df %>% distinct(node_from_combined, node_to_combined, .keep_all = TRUE)
+  
+  # Add the distinct data frame to the new list
+  distinct_data_moves_list[[model_name]] <- distinct_df
+}
+```
+
 
 ## Making Graphs!
 
 This makes the overall graph for each model.
-
-```{r, echo=FALSE, fig.width=10, fig.height=8}
-if (!dir.exists("figures")) {
-    dir.create("figures", recursive = TRUE)
-}
-# Define the function to create and plot the combined network graph without highlights
+```{r}
 create_combined_graph <- function(data, model_name) {
-  # Create a graph object using node_from and node_to columns for all data
-  g <- graph_from_data_frame(d = data %>% select(node_from, node_to, direction, state_correct, blocks_in, real_action_number, frequency), directed = TRUE)
+  # Calculate the number of participants (N)
+  N <- length(unique(data$ID_id))
+  
+  # Create a graph object using the combined columns
+  g <- graph_from_data_frame(d = data %>% select(node_from_combined, node_to_combined, direction, state_correct, blocks_in, real_action_number, frequency), directed = TRUE)
   
   # Set node attributes
-  V(g)$color <- ifelse(V(g)$name %in% data$node_to[data$state_correct], "green", "yellow")
+  V(g)$color <- ifelse(V(g)$name %in% data$node_to_combined[data$state_correct], "springgreen2", "gold")
   V(g)$level <- sapply(V(g)$name, function(x) {
-    if (x %in% data$node_to) {
-      data$blocks_in[data$node_to == x][1]
+    if (x == "0_FALSE") {
+      min(data$blocks_in, na.rm = TRUE) - 0.5 # Set the level of node "0_FALSE" to be above the highest level
+    } else if (x %in% data$node_to_combined) {
+      data$blocks_in[data$node_to_combined == x][1]
     } else {
       NA
     }
   })
   
+  # Calculate edge probabilities
+  edge_probabilities <- data$frequency / N
+  
   # Set edge attributes
   E(g)$color <- ifelse(data$direction == "positive", "darkturquoise", "brown1")
-
+  E(g)$width <- edge_probabilities * 10  # Adjust the multiplier as needed for better visualization
+  E(g)$label <- round(edge_probabilities, 2)
+  
   # Create a layout with the Fruchterman-Reingold algorithm
   layout <- layout_with_fr(g)
   layout <- as.data.frame(layout)
@@ -783,63 +860,73 @@ create_combined_graph <- function(data, model_name) {
       layout$x[layout$y == y_val] <- seq(from = -num_nodes / 2, to = num_nodes / 2, length.out = num_nodes)
     }
   }
+  
+  # Place the node "0_FALSE" in the middle
+  if ("0_FALSE" %in% layout$name) {
+    layout$x[layout$name == "0_FALSE"] <- 0
+  }
 
-  # Plot the graph using ggraph with the adjusted layout
+  # Plot the graph using ggraph with the adjusted layout and node labels
   p <- ggraph(g, layout = layout) + 
-    geom_edge_link(aes(colour = I(color), label = frequency, label_pos = 0.2)) +
-    geom_node_point(aes(color = color), size = 8) +
+    geom_edge_parallel(aes(colour = I(color), width = width)) +
+    geom_node_point(aes(color = color), size = 14) +
+    #geom_node_text(aes(label = name), repel = TRUE, size = 5) +  # Add node labels
     scale_color_identity() +
     theme_void() +
-    ggtitle(paste("Combined Network Graph for Model", model_name)) +
     guides(color = FALSE, edge_color = FALSE, edge_width = FALSE) 
   
+  ggsave(filename = paste0("Graphs/Adults/Group-network-graphs-", model_name, ".svg"), plot = p, device = "svg", width = 32, height = 24)
   # Print the plot
   print(p)
 }
+
 # Process each data frame in the list
-for (model_name in names(data_moves_list)) {
-  df <- data_moves_list[[model_name]]
+for (model_name in names(distinct_data_moves_list)) {
+  df <- distinct_data_moves_list[[model_name]]
   
   # Create and print the combined network graph without highlights
   create_combined_graph(df, model_name)
 }
-
 ```
 
-This makes the individual graphs for each participant.
-
-```{r, echo=FALSE, fig.width=10, fig.height=8}
+```{r}
 # Define the function to create and plot the combined network graph for each participant
-create_combined_network_graph <- function(data, highlight_nodes, highlight_edges, participant_id, model_name) {
-  # Create a graph object using node_from and node_to columns for all data
-  g <- graph_from_data_frame(d = data %>% select(node_from, node_to, direction, state_correct, blocks_in, real_action_number, frequency), directed = TRUE)
+create_combined_network_graph <- function(base_data, highlight_data, highlight_nodes, highlight_edges, participant_id, model_name) {
+  # Create a graph object using node_from_combined and node_to_combined columns for the base data
+  g <- graph_from_data_frame(d = base_data %>% select(node_from_combined, node_to_combined, direction, state_correct, blocks_in, real_action_number, frequency, edge_probability), directed = TRUE)
   
   # Set node attributes
-  V(g)$color <- ifelse(V(g)$name %in% data$node_to[data$state_correct], "green", "yellow")
+  V(g)$color <- ifelse(V(g)$name %in% base_data$node_to_combined[base_data$state_correct], "springgreen2", "gold")
   V(g)$level <- sapply(V(g)$name, function(x) {
-    if (x %in% data$node_to) {
-      data$blocks_in[data$node_to == x][1]
+    if (x == "0_FALSE") {
+      min(base_data$blocks_in, na.rm = TRUE) - 0.5
+    } else if (x %in% base_data$node_to_combined) {
+      base_data$blocks_in[base_data$node_to_combined == x][1]
     } else {
       NA
     }
   })
+
+  # Handle NA values in levels
+  V(g)$level[is.na(V(g)$level)] <- max(V(g)$level, na.rm = TRUE) + 1
+  
   # Set edge attributes
   E(g)$color <- "grey"
   
   # Highlight edges
-  edge_list <- paste(data$node_from, data$node_to)
-  highlight_edge_list <- paste(highlight_edges$node_from, highlight_edges$node_to)
+  edge_list <- paste(base_data$node_from_combined, base_data$node_to_combined)
+  highlight_edge_list <- paste(highlight_edges$node_from_combined, highlight_edges$node_to_combined)
   E(g)$color <- ifelse(edge_list %in% highlight_edge_list, "red", E(g)$color)
   
- # Create a layout with the Fruchterman-Reingold algorithm
+  # Create a layout with the Fruchterman-Reingold algorithm
   layout <- layout_with_fr(g)
   layout <- as.data.frame(layout)
   colnames(layout) <- c("x", "y")
   layout$name <- V(g)$name
-
+  
   # Adjust the y positions based on blocks_num and invert them
   layout$y <- -V(g)$level
-
+  
   # Spread the nodes more evenly on the x-axis within each level
   unique_y <- unique(layout$y)
   for (y_val in unique_y) {
@@ -850,23 +937,30 @@ create_combined_network_graph <- function(data, highlight_nodes, highlight_edges
     }
   }
   
+  # Place the node "0" in the middle and ensure it's alone
+  if ("0_FALSE" %in% layout$name) {
+    layout$x[layout$name == "0_FALSE"] <- 0
+  }
+  
   # Plot the graph using ggraph with the adjusted layout
-  p <- ggraph(g, layout = layout) + 
-    geom_edge_link(aes(colour = color, label = frequency, label_pos = 0.2)) +
-    geom_node_point(aes(color = color), size = 8) +
-    geom_node_point(data = layout %>% filter(name %in% highlight_nodes), aes(x = x, y = y), color = "red", size = 9, shape = 21, stroke = 2) +
+  p <- ggraph(g, layout = layout) +
+    geom_edge_parallel(aes(colour = color, width = frequency)) +
+    geom_node_point(aes(color = color), size = 14) +
+    geom_node_point(data = layout %>% filter(name %in% highlight_nodes), aes(x = x, y = y), color = "red", size = 16, shape = 21, stroke = 2) +
     scale_color_identity() +
     scale_edge_color_manual(values = c("grey", "red")) +  # Explicitly define edge colors
     theme_void() +
-    ggtitle(paste("Combined Network Graph for Participant", participant_id, "in Model", model_name)) +
     guides(color = FALSE, edge_color = FALSE, edge_width = FALSE)
-  # print plot
+  
+  ggsave(filename = paste0("Graphs/Adults/Network-graphs-", model_name, "-", participant_id, ".svg"), plot = p, device = "svg", width = 32, height = 24)
+  # Print the plot
   print(p)
 }
 
 # Process each data frame in the list
 for (model_name in names(data_moves_list)) {
   df <- data_moves_list[[model_name]]
+  base_df <- distinct_data_moves_list[[model_name]]
   
   # Get unique participant IDs
   participant_ids <- unique(df$ID_id)
@@ -874,11 +968,13 @@ for (model_name in names(data_moves_list)) {
   # Create and save combined network graphs for each participant
   for (participant_id in participant_ids) {
     filtered_data <- df %>% filter(ID_id == participant_id)
-    highlight_nodes <- filtered_data$state
-    highlight_edges <- filtered_data %>% select(node_from, node_to)
+    highlight_nodes <- filtered_data$node_to_combined
+    highlight_edges <- filtered_data %>% select(node_from_combined, node_to_combined)
     
-    create_combined_network_graph(df, highlight_nodes, highlight_edges, participant_id, model_name)
+    create_combined_network_graph(base_df, filtered_data, highlight_nodes, highlight_edges, participant_id, model_name)
   }
 }
-
+toc()
 ```
+
+

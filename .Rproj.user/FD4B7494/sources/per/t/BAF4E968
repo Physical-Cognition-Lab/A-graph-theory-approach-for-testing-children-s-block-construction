@@ -1,0 +1,28 @@
+{
+    "id": "BAF4E968",
+    "path": null,
+    "project_path": null,
+    "type": "object_explorer",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1741280196658.0,
+    "source_on_save": false,
+    "relative_order": 2,
+    "properties": {
+        "id": "1c1ba9b253534eb3870631d7ca8782ef",
+        "name": "data_moves_list",
+        "title": "data_moves_list",
+        "language": "R",
+        "source_window_id": "",
+        "Source": "Source"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 2314861393471355426,
+    "encoding": "",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1741280196658,
+    "read_only": false,
+    "read_only_alternatives": []
+}
