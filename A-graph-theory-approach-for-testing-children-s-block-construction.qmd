@@ -14,20 +14,15 @@ library(progress)
 library(igraph)
 library(ggraph)
 library(tidygraph)
-library(Cairo)
-library(tictoc)
 ```
 
 ## Load in data
 
-Here we load in our data file, in our case we have separate datafiles for children and adults. These files come from datavyu output, based on our coding manual.
+Load in your data file. Using our coding manual and "new_construct" script to export from Datavyu, data should come out correctly.
 
 ```{r}
-tic("total")
-#data <- read.csv("Data/child_data.csv")
-data <- read.csv("Data/adult_data2.csv")
-#data <- rbind(data, data1)
-## or "data/child_data.csv" 
+
+data <- read.csv("Data/adult_data2.csv") #e.g. our data
 # Run a function that converts any columns that should be integer (i.e. onset/offset columns) to integer (for some reason some weren't)
 convert_to_integer <- function(df) {
   for (col in names(df)) {
@@ -81,7 +76,7 @@ data <- duplicate_rows(data, relation_cols)
 
 ### Reshaping Code to strings and creating 'isotopes' for different views of same string
 
-Here I want to get the data into columns called view1-4 and below1-4 where view 1 is the string for the move they did, and the rest are how that string would be expressed from different viewpoints. Not sure how to do that more easily :(
+Here I want to get the data into columns called view1-4 and below1-4 where view 1 is the string for the move they did, and the rest are how that string would be expressed from different viewpoints. This is important because when they start moving the model round, we want to be able to account for the move from any view.
 
 ```{r}
 # Rename the first 7 columns
@@ -295,7 +290,7 @@ correct_moves_list <- split(combined_df, combined_df$model)
 First, we need to coalesce onset times (the perspective_orienting and construct_action timings are kept separately), then we make sure that . (Reflecting when they have started the model from scratch) are associated with moves. This will allow us to use it later to make sure when they start building a new model, we express starting from scratch.
 
 ```{r}
-# First we coalesce in the two onsets, so we can intermix in the persp_orienting and moves. Then make sure the rows are arranged correctly, then we want to create a column which keeps note of which moves are actually one move (what we split earlier). Lastly, we add Action_Number (ignoring one_move for now)
+# First we coalesce in the two onsets, so we can intermix in the persp_orienting and moves. Then make sure the rows are arranged correctly, then we want to create a column which keeps note of which moves are actually one move (what we split earlier). Lastly, we add Action_Number
 data <- data %>%
   mutate(Construct_Action_onset = coalesce(Construct_Action_onset, Perspective_Orienting_onset),
          Construct_Action_offset = coalesce(Construct_Action_offset, Perspective_Orienting_offset)) %>%
@@ -536,7 +531,6 @@ data_moves_list <- lapply(data_moves_list, transform_df)
 
 The below functions check and returns if moves are correct or not by comparing them to the correct_moves dfs. The one after, does a similar thing for states. It checks whether every string included in the state comes from THE SAME VIEWPOINT in the correct_moves dfs, confirming that the model is correct. In order for the model to be correct, the moves need to be correct but also all from the same viewpoint.
 
-#thsi is having isseus with looking at when there are just two moves but they both feature in two columns. not sure why...
 ```{r}
 # Function to check if view1 string is in any column of correct_moves or set to "deconstruct"
 check_move_correct <- function(df, correct_moves) {
@@ -620,9 +614,6 @@ apply_check_moves <- function(data_moves_list, correct_moves_list) {
 data_moves_list <- apply_check_moves(data_moves_list, correct_moves_list)
 
 ```
-
-
-
 
 ## Assigning move IDs
 
@@ -742,7 +733,6 @@ After, we create direction based on how the number of blocks in each state chang
 ##still have the issue of if we start building again.. can use . to change it but then the arrows won't flow in the graph..
 
 ```{r}
-
 # Function to count unique blocks
 count_blocks <- function(string) {
   # Extract all occurrences of the specified blocks within longer strings
@@ -752,12 +742,10 @@ count_blocks <- function(string) {
   # Count the number of unique blocks
   length(unique_blocks)
 }
-
 # Function to process each data frame in the list
 process_data_moves_list <- function(data_moves_list) {
   data_moves_list <- lapply(data_moves_list, function(df) {
     N <- length(unique(df$ID_id))  # Calculate the number of participants
-    
     df %>%
       arrange(ID_id, real_action_number) %>%
       mutate(blocks_in = sapply(concatenated_moves, count_blocks)) %>%
@@ -789,31 +777,26 @@ process_data_moves_list <- function(data_moves_list) {
   
   return(data_moves_list)
 }
-
-
 data_moves_list <- process_data_moves_list(data_moves_list)
 ```
 
 ```{r}
-
+# Make list of distinct moves to make the base graph
 distinct_data_moves_list <- list()
-
 # Iterate over each data frame in the original list
 for (model_name in names(data_moves_list)) {
   df <- data_moves_list[[model_name]]
-
   # Select distinct rows based on the combined columns
   distinct_df <- df %>% distinct(node_from_combined, node_to_combined, .keep_all = TRUE)
-  
   # Add the distinct data frame to the new list
   distinct_data_moves_list[[model_name]] <- distinct_df
 }
 ```
 
-
 ## Making Graphs!
 
 This makes the overall graph for each model.
+
 ```{r}
 create_combined_graph <- function(data, model_name) {
   # Calculate the number of participants (N)
@@ -888,6 +871,8 @@ for (model_name in names(distinct_data_moves_list)) {
   create_combined_graph(df, model_name)
 }
 ```
+
+This makes individual graphs for each participant each model. Mostly aesthetic features which can be changed however you prefer..
 
 ```{r}
 # Define the function to create and plot the combined network graph for each participant
@@ -974,7 +959,4 @@ for (model_name in names(data_moves_list)) {
     create_combined_network_graph(base_df, filtered_data, highlight_nodes, highlight_edges, participant_id, model_name)
   }
 }
-toc()
 ```
-
-
