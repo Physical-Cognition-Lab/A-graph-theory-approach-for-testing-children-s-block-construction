@@ -21,7 +21,6 @@ library(tidygraph)
 Load in your data file. Using our coding manual and "new_construct" script to export from Datavyu, data should come out correctly.
 
 ```{r}
-
 data <- read.csv("Data/adult_data2.csv") #e.g. our data
 # Run a function that converts any columns that should be integer (i.e. onset/offset columns) to integer (for some reason some weren't)
 convert_to_integer <- function(df) {
@@ -37,9 +36,11 @@ data <- convert_to_integer(data)
 
 ## Reshaping Data
 
+The point of the whole reshaping process is to get "strings" which reflect spatial connections created by each move made. That way we can put these strings together and understand what the model looks like. Several things need to be done to get these strings. Firstly, moves need to be split up if they reflect several spatial connections. Second, we need to think about which viewpoint participants are working from. Since they move the model, we want to make sure strings reflect what's going on from specific views at any point.
+
 ### Reshaping Extra Moves
 
-When a participant adds a new block, sometimes it gets added to several blocks. We want this split up into separate moves so that we have all moves in our strings, so that if something is removed in a different way to being added, it still works. We can keep count of these without another column, since it is the only way there could be several moves at the same onset/offset
+When a participant adds a new block, sometimes it gets added to several relational blocks. We want this split up into separate moves so that we have characterisation of every spatial connection. We still know that they are the same move by their timestamp. The aim is to create strings which signify every spatial connection between bricks in any one model.
 
 ```{r}
 # Function to identify rows that have values in several "relational block" columns, and duplicates them, taking contents of 2/3/4 relational columns and putting them in the first relational block, so that singular moves that touch more than one block are now represented as different rows (moves)
@@ -76,7 +77,7 @@ data <- duplicate_rows(data, relation_cols)
 
 ### Reshaping Code to strings and creating 'isotopes' for different views of same string
 
-Here I want to get the data into columns called view1-4 and below1-4 where view 1 is the string for the move they did, and the rest are how that string would be expressed from different viewpoints. This is important because when they start moving the model round, we want to be able to account for the move from any view.
+Here I want to get the data into columns called view1-4 and below1-4 where view 1 is the string for the move they did, and the rest are how that string would be expressed from different viewpoints and if characterised from below. This is important because when they start moving the model round, we want to be able to account for the move from any view.
 
 ```{r}
 # Rename the first 7 columns
@@ -184,11 +185,10 @@ data <- data %>%
 
 ### Reshaping Correct Moves
 
-We read in the base correct moves (i.e. only 5-8 possible correct moves for each participant). These moves are put in from N view. and then we create 'isotopes' as usual. This means that all moves in same column reflect correct moves from that view.
+We read in the base correct moves (i.e. only 5-8 possible correct spatial connections for each model). These moves are put in from N view. and then we create 'isotopes' like before. This means that all strings in same column reflect spatial connections from a specific view, so we can make sure they all match.
 
 ```{r}
 correct_moves <- read.csv("Data/correct_moves_compact.csv")
-
 # Create the second set of 7 columns
 correct_moves <- correct_moves %>%
   mutate(
@@ -200,7 +200,6 @@ correct_moves <- correct_moves %>%
     f_b_2 = ifelse(is.na(l_r), NA, -l_r),
     l_r_2 = f_b
   )
-
 # Create the third set of 7 columns
 correct_moves <- correct_moves %>%
   mutate(
@@ -212,7 +211,6 @@ correct_moves <- correct_moves %>%
     f_b_3 = ifelse(is.na(f_b), NA, -f_b),
     l_r_3 = ifelse(is.na(l_r), NA, -l_r)
   )
-
 # Create the fourth set of 7 columns
 correct_moves <- correct_moves %>%
   mutate(
@@ -224,7 +222,6 @@ correct_moves <- correct_moves %>%
     f_b_4 = l_r,
     l_r_4 = ifelse(is.na(f_b), NA, -f_b)
   )
-
 # Create the below columns
 correct_moves <- correct_moves %>%
   mutate(
@@ -257,7 +254,6 @@ correct_moves <- correct_moves %>%
     f_b_b4 = -f_b_4,
     l_r_b4 = -l_r_4
   )
-
 # Create the node columns
 correct_moves <- correct_moves %>%
   mutate(
@@ -270,24 +266,20 @@ correct_moves <- correct_moves %>%
     below3 = paste(b1_b3, a_b_b3, b1_v_h_b3, b2_b3, b2_v_h_b3, f_b_b3, l_r_b3, sep = "_"),
     below4 = paste(b1_b4, a_b_b4, b1_v_h_b4, b2_b4, b2_v_h_b4, f_b_b4, l_r_b4, sep = "_")
   )
-
-# Split into two dataframes and row bind them
+# Split into two dataframes and row bind them so that below columns are beneath view columns. this is so if someone does some moves as below and some moves as above, we can still show they are from same view.
 view_df <- correct_moves %>%
   select(model, view1, view2, view3, view4)
-
 below_df <- correct_moves %>%
   select(model, below1, below2, below3, below4) %>%
   rename(view1 = below1, view2 = below2, view3 = below3, view4 = below4)
-
 combined_df <- bind_rows(view_df, below_df)
-
 # Split the combined dataframe by model
 correct_moves_list <- split(combined_df, combined_df$model)
 ```
 
 ### Reshaping Perspective Orienting to get viewpoints
 
-First, we need to coalesce onset times (the perspective_orienting and construct_action timings are kept separately), then we make sure that . (Reflecting when they have started the model from scratch) are associated with moves. This will allow us to use it later to make sure when they start building a new model, we express starting from scratch.
+First, we need to coalesce onset times (the perspective_orienting and construct_action timings are kept separately), then we make sure that "." (Reflecting when they have started the model from scratch) are associated with moves. This will allow us to use it later to make sure when they start building a new model, we express starting from scratch.
 
 ```{r}
 # First we coalesce in the two onsets, so we can intermix in the persp_orienting and moves. Then make sure the rows are arranged correctly, then we want to create a column which keeps note of which moves are actually one move (what we split earlier). Lastly, we add Action_Number
@@ -425,7 +417,7 @@ data_moves_list <- lapply(data_moves_list, compute_string_choice)
 
 ### Function to create original states post actions
 
-This function creates a column called concatenated_moves, which gives us all the moves involved in the current model, after the action of that row is completed. Essentially this builds us our states column. It works by taking the correct string (From compute string, from viewpoint computing), and either adding it to a larger string, or removing it (or it's isotopes) from the string, based on whether it's a construct, deconstruct or fall move.
+This function creates a column called concatenated_moves, which gives us all the moves involved in the current model, after the action of that row is completed. Essentially this builds us our states column. Which has all the spatial connections (or moves) in the current state, making up an idea of the exact model after each move. It works by taking the correct string (From compute string, from viewpoint computing), and either adding it to a larger string, or removing it (or it's isotopes) from the string, based on whether it's a construct, deconstruct or fall move.
 
 ```{r}
 create_concatenated_moves <- function(df) {
@@ -726,7 +718,7 @@ Now we have the state and move columns to tell us the state after each move, all
 
 First, we extract number of blocks in each state, this will allow us to define the direction of each edge (positive or negative).
 
-We then create edges by creating node_to and node_from columns. Importantly, here we make sure that if a move is several moves, it takes the FIRST node_from and LAST node_to.
+We then create edges by creating node_to and node_from columns. Importantly, here we make sure that if a move is several moves, it takes the FIRST node_from and LAST node_to. We also change the nodes to have node numbers + \_TRUE or FALSE. This is because you could have all correct moves (numbered the same) but not from the same viewpoint and therefore incorrect.
 
 After, we create direction based on how the number of blocks in each state changes, and lastly we create a frequency column which tells us how many times this edge occurs.
 
@@ -795,7 +787,7 @@ for (model_name in names(data_moves_list)) {
 
 ## Making Graphs!
 
-This makes the overall graph for each model.
+This makes the overall graph for each model. Mostly aesthetic features which can be changed however you prefer..
 
 ```{r}
 create_combined_graph <- function(data, model_name) {
