@@ -790,10 +790,7 @@ for (model_name in names(data_moves_list)) {
 This makes the overall graph for each model. Mostly aesthetic features which can be changed however you prefer..
 
 ```{r}
-create_combined_graph <- function(data, model_name) {
-  # Calculate the number of participants (N)
-  N <- length(unique(data$ID_id))
-  
+create_combined_graph <- function(data, model_name, N) {
   # Create a graph object using the combined columns
   g <- graph_from_data_frame(d = data %>% select(node_from_combined, node_to_combined, direction, state_correct, blocks_in, real_action_number, frequency), directed = TRUE)
   
@@ -845,7 +842,6 @@ create_combined_graph <- function(data, model_name) {
   p <- ggraph(g, layout = layout) + 
     geom_edge_parallel(aes(colour = I(color), width = width)) +
     geom_node_point(aes(color = color), size = 14) +
-    #geom_node_text(aes(label = name), repel = TRUE, size = 5) +  # Add node labels
     scale_color_identity() +
     theme_void() +
     guides(color = FALSE, edge_color = FALSE, edge_width = FALSE) 
@@ -858,10 +854,12 @@ create_combined_graph <- function(data, model_name) {
 # Process each data frame in the list
 for (model_name in names(distinct_data_moves_list)) {
   df <- distinct_data_moves_list[[model_name]]
+  N <- length(unique(data_moves_list[[model_name]]$ID_id))  # N from data_moves_list
   
   # Create and print the combined network graph without highlights
-  create_combined_graph(df, model_name)
+  create_combined_graph(df, model_name, N)
 }
+
 ```
 
 This makes individual graphs for each participant each model. Mostly aesthetic features which can be changed however you prefer..
