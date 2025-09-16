@@ -13,7 +13,7 @@ This folder contains the .Qmd file used to process the data and construct graphs
 
 2. Data
 
-This folder is curretnly empty, but would be where data files (extracted from video coding) are stored and used for analysis.
+This folder is currently empty, but would be where data files (extracted from video coding) are stored and used for analysis.
 
 3. Video-Coding
 
