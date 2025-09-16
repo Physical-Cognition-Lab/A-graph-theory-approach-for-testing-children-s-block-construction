@@ -180,7 +180,7 @@ data <- data %>%
     below4 = paste(b1_b4, a_b_b4, b1_v_h_b4, b2_b4, b2_v_h_b4, f_b_b4, l_r_b4, sep = "_")
   )
 data <- data %>%
-  select(ID_id, Task_model_type, Task_correct_final_ci, Task_onset, Construct_Action_onset, Construct_Action_offset, Construct_Action_action_cd, Perspective_Orienting_onset, Perspective_Orienting_offset, Perspective_Orienting_direction_lr, view1, view2, view3, view4, below1, below2, below3, below4)
+  select(ID_id, Task_model_type, Task_correct_final_ci, Task_onset, Task_offset,  Construct_Action_onset, Construct_Action_offset, Construct_Action_action_cd, Perspective_Orienting_onset, Perspective_Orienting_offset, Perspective_Orienting_direction_lr, view1, view2, view3, view4, below1, below2, below3, below4)
 ```
 
 ### Reshaping Correct Moves
@@ -783,6 +783,15 @@ for (model_name in names(data_moves_list)) {
   # Add the distinct data frame to the new list
   distinct_data_moves_list[[model_name]] <- distinct_df
 }
+
+```
+
+```{r}
+# Combine all data frames in the list into one
+adult_data_combined <- bind_rows(data_moves_list)
+
+# Save to CSV
+write.csv(adult_data_combined, "combined_adult_data.csv", row.names = FALSE)
 ```
 
 ## Making Graphs!
